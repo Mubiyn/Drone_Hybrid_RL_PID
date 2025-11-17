@@ -6,7 +6,7 @@ Fast reference for getting started with the Drone Hybrid RL+PID project.
 
 ```bash
 # Clone and navigate
-cd /Users/MMD/Desktop/MLR/Task1_Drone_Hybrid_RL_PID
+cd Task1_Drone_Hybrid_RL_PID
 
 # Option 1: Conda (Recommended)
 conda env create -f environment.yml
@@ -261,7 +261,7 @@ python scripts/deploy_real.py               # Deploy to Tello
 ### Import Errors
 ```bash
 # Make sure you're in project root
-cd /Users/MMD/Desktop/MLR/Task1_Drone_Hybrid_RL_PID
+cd Task1_Drone_Hybrid_RL_PID
 
 # Reinstall in editable mode
 pip install -e .

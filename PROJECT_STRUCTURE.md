@@ -231,7 +231,7 @@ git push origin feature/<your-feature>
 
 1. **Initialize Git Repository:**
    ```bash
-   cd /Users/MMD/Desktop/MLR/Task1_Drone_Hybrid_RL_PID
+   cd Task1_Drone_Hybrid_RL_PID
    git init
    git add .
    git commit -m "Initial project structure"

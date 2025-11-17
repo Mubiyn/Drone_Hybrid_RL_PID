@@ -6,9 +6,9 @@ stable-baselines3>=2.0.0
 sb3-contrib>=2.0.0
 
 # Simulation
-gym-pybullet-drones>=1.0.0
-pybullet>=3.2.5
-mujoco>=2.3.0
+# gym-pybullet-drones is installed via: pip install -e /path/to/gym-pybullet-drones
+# pybullet installed via: conda install -c conda-forge pybullet (for Apple Silicon)
+# mujoco>=2.3.0  # Optional, not needed for this project
 
 # Real Drone Interface
 djitellopy>=2.4.0
