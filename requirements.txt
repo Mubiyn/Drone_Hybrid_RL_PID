@@ -2,7 +2,7 @@
 numpy>=1.21.0,<1.24.0
 torch>=1.12.1,<2.0.0
 gymnasium>=0.26.0
-stable-baselines3>=2.0.0
+stable-baselines3[extra]>=2.0.0  # [extra] includes pygame, ale-py, rich for PPO training
 sb3-contrib>=2.0.0
 
 # Simulation

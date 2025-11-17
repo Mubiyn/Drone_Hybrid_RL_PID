@@ -1,0 +1,77 @@
+{
+  "task": "emergency_landing",
+  "timestamp": "20251117_154918",
+  "metrics": {
+    "rmse": 0.35083136605811754,
+    "max_error": 1.9668298277315115,
+    "mean_error": 0.14741590389336384,
+    "final_error": 0.06638789234899375,
+    "control_effort": {
+      "mean": 14374.859130788345,
+      "max": 21666.447500000002,
+      "std": 1615.9689398230182,
+      "saturation_pct": 100.0
+    }
+  },
+  "config": {
+    "pid": {
+      "kp": [
+        0.4,
+        0.4,
+        1.0
+      ],
+      "ki": [
+        0.0,
+        0.0,
+        0.1
+      ],
+      "kd": [
+        0.2,
+        0.2,
+        0.5
+      ],
+      "output_limits": [
+        -1.0,
+        1.0
+      ],
+      "integral_limits": [
+        -0.5,
+        0.5
+      ]
+    },
+    "task": {
+      "name": "hover",
+      "target_position": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "tolerance": 0.05,
+      "max_episode_steps": 500,
+      "control_frequency": 48
+    },
+    "environment": {
+      "physics": "PyBullet",
+      "drone_model": "cf2x",
+      "obs_type": "kin",
+      "act_type": "rpm"
+    },
+    "simulation": {
+      "gui": false,
+      "record_video": false,
+      "aggregate_phy_steps": 5
+    },
+    "training": {
+      "episodes": 100,
+      "evaluation_freq": 10,
+      "save_best": true,
+      "save_path": "models/ppo/"
+    },
+    "logging": {
+      "tensorboard": true,
+      "log_dir": "logs/tensorboard/",
+      "save_plots": true,
+      "plot_dir": "results/figures/"
+    }
+  }
+}

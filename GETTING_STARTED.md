@@ -169,6 +169,10 @@ pip install -r requirements.txt
 - Development: `jupyter`, `notebook`, `ipywidgets`
 - Experiment tracking: `wandb`, `mlflow`, `tensorboard`
 - Code quality: `black`, `flake8`, `mypy`
+- **PPO Training (Week 2):** `stable-baselines3[extra]` includes:
+  - `pygame` - for rendering and visualization
+  - `ale-py` - Atari learning environment (SB3 dependency)
+  - `rich` - beautiful terminal output for training progress
 
 **Note:** The following are NOT in requirements.txt (installed separately):
 - `pybullet` - installed via conda-forge

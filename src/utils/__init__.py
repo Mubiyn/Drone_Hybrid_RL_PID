@@ -1,10 +1,10 @@
 """Utilities Package"""
 
-from src.utils.visualization import plot_training_curves, plot_trajectory
-from src.utils.logging_utils import FlightLogger
+from src.utils.trajectories import get_trajectory, TrajectoryGenerator
+from src.utils.metrics import evaluate_trajectory
 
 __all__ = [
-    'plot_training_curves',
-    'plot_trajectory',
-    'FlightLogger',
+    'get_trajectory',
+    'TrajectoryGenerator',
+    'evaluate_trajectory',
 ]
