@@ -1,7 +1,8 @@
 # Drone Hybrid RL+PID Control System
 
 # Test RL
-`
+
+```bash
 python src/testing/test_rl.py --interactive --> Launch interactive menu to see all tests
 
 python src/testing/test_rl.py --task hover
@@ -9,7 +10,7 @@ python src/testing/test_rl.py --task figure8
 python src/testing/test_rl.py --task waypoint_delivery
 python src/testing/test_rl.py --gui=False
 python src/testing/test_rl.py --demo 
-`
+```
 
 
 ## Project Overview
