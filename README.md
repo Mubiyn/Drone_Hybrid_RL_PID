@@ -1,5 +1,17 @@
 # Drone Hybrid RL+PID Control System
 
+# Test RL
+`
+python src/testing/test_rl.py --interactive --> Launch interactive menu to see all tests
+
+python src/testing/test_rl.py --task hover
+python src/testing/test_rl.py --task figure8
+python src/testing/test_rl.py --task waypoint_delivery
+python src/testing/test_rl.py --gui=False
+python src/testing/test_rl.py --demo 
+`
+
+
 ## Project Overview
 
 This project implements a hybrid control system for quadrotor drones that combines traditional PID control with Reinforcement Learning (PPO) for robust autonomous flight. The system is trained in PyBullet simulation with domain randomization and can be deployed to real DJI Tello drones.

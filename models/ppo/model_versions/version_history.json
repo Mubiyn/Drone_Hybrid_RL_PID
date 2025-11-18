@@ -53,5 +53,10 @@
     "timestamp": "2025-11-18T22:42:28.490268",
     "combined_score": -2066.926460726071,
     "best_task": "circle"
+  },
+  "v12": {
+    "timestamp": "2025-11-18T22:46:44.066258",
+    "combined_score": -460.62103640110035,
+    "best_task": "hover"
   }
 }
