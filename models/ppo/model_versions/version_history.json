@@ -1,0 +1,57 @@
+{
+  "v1": {
+    "timestamp": "2025-11-18T15:59:01.754899",
+    "combined_score": -289.1206541928166,
+    "best_task": "circle"
+  },
+  "v2": {
+    "timestamp": "2025-11-18T16:05:26.799837",
+    "combined_score": -271.4467735863034,
+    "best_task": "hover"
+  },
+  "v3": {
+    "timestamp": "2025-11-18T16:18:22.067703",
+    "combined_score": -231.4545875845261,
+    "best_task": "hover"
+  },
+  "v4": {
+    "timestamp": "2025-11-18T17:19:01.795668",
+    "combined_score": -474.3247805605956,
+    "best_task": "hover"
+  },
+  "v5": {
+    "timestamp": "2025-11-18T17:47:34.240132",
+    "combined_score": -474.29161848183765,
+    "best_task": "hover"
+  },
+  "v6": {
+    "timestamp": "2025-11-18T19:03:57.097412",
+    "combined_score": -1857.2461611125855,
+    "best_task": "circle"
+  },
+  "v7": {
+    "timestamp": "2025-11-18T19:32:40.359050",
+    "combined_score": -491.70689513970206,
+    "best_task": "hover"
+  },
+  "v8": {
+    "timestamp": "2025-11-18T20:50:58.544187",
+    "combined_score": 0.0323463986117,
+    "best_task": "hover"
+  },
+  "v9": {
+    "timestamp": "2025-11-18T22:28:46.468032",
+    "combined_score": 62.146802052303364,
+    "best_task": "circle"
+  },
+  "v10": {
+    "timestamp": "2025-11-18T22:33:33.596862",
+    "combined_score": 71.55587627294828,
+    "best_task": "circle"
+  },
+  "v11": {
+    "timestamp": "2025-11-18T22:42:28.490268",
+    "combined_score": -2066.926460726071,
+    "best_task": "circle"
+  }
+}

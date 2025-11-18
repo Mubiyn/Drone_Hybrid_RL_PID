@@ -1,0 +1,19 @@
+{
+  "version": "v2",
+  "timestamp": "2025-11-18T16:05:26.799837",
+  "performance_metrics": {
+    "combined_score": -271.4467735863034,
+    "hover_score": -238.4711067866175,
+    "circle_score": -285.5792022147402,
+    "phase": 2,
+    "task_trained": "circle"
+  },
+  "task_scores": {
+    "hover": -238.4711067866175,
+    "circle": -285.5792022147402,
+    "waypoint_delivery": -511.6248113557617
+  },
+  "total_timesteps": 551936,
+  "notes": "Phase 2 - circle training",
+  "model_type": "PPO"
+}

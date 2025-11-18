@@ -85,7 +85,7 @@ TASK_TRAJECTORIES = {
             'radius': 1.5,
             'period': 10,
             'freq': 48,
-            'duration': 20
+            'duration': 30
         }
     },
     'emergency_landing': {
@@ -106,3 +106,6 @@ def get_trajectory(task_name):
     
     task = TASK_TRAJECTORIES[task_name]
     return task['generator'](**task['params'])
+
+def get_available_tasks():
+    return list(TASK_TRAJECTORIES.keys())

@@ -1,0 +1,18 @@
+{
+  "version": "v10",
+  "timestamp": "2025-11-18T22:33:33.596862",
+  "performance_metrics": {
+    "combined_score": 71.55587627294828,
+    "hover_score": 20.946123661713344,
+    "circle_score": 147.47050518980066,
+    "phase": 2,
+    "task_trained": "hover_extended"
+  },
+  "task_scores": {
+    "hover": 20.946123661713344,
+    "circle": 147.47050518980066
+  },
+  "total_timesteps": 409600,
+  "notes": "Fresh training - Phase 2",
+  "model_type": "PPO"
+}

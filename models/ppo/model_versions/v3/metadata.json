@@ -1,0 +1,19 @@
+{
+  "version": "v3",
+  "timestamp": "2025-11-18T16:18:22.067703",
+  "performance_metrics": {
+    "combined_score": -231.4545875845261,
+    "hover_score": -96.74844445358481,
+    "circle_score": -289.185791783501,
+    "phase": 3,
+    "task_trained": "figure8"
+  },
+  "task_scores": {
+    "hover": -96.74844445358481,
+    "circle": -289.185791783501,
+    "waypoint_delivery": -512.6926440667738
+  },
+  "total_timesteps": 752640,
+  "notes": "Phase 3 - figure8 training",
+  "model_type": "PPO"
+}
