@@ -10,14 +10,12 @@ from gym_pybullet_drones.envs.CtrlAviary import CtrlAviary
 import sys
 import os
 
-# FIXED: More robust path handling
-try:
-    from src.utils.trajectories import get_trajectory
-except ImportError:
-    # Alternative import path
-    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
-    sys.path.insert(0, project_root)
-    from src.utils.trajectories import get_trajectory
+
+project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '../..'))
+sys.path.insert(0, project_root)
+from src.utils.trajectories import get_trajectory
+#from src.utils.reward_funcs import get_reward_function
+
 
 
 class DroneEnv(gym.Env):

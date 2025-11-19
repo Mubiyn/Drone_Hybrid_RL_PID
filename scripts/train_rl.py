@@ -13,12 +13,12 @@ from src.envs.multiple_task_env import DroneEnv
 from src.utils.model_versions import ModelVersionManager
 from src.utils.reward_funcs import get_reward_function
 
-def make_env(task_name='hover'):
+def make_env(task_name='hover', gui=False):
     return DroneEnv(
         task_name=task_name, 
         reward_fn=get_reward_function(task_name),
-        domain_randomization=False,  # Start without randomization
-        gui=False
+        domain_randomization=False,  # (or False if you want easier training)
+        gui=gui
     )
 
 def evaluate_model(model, task_name, episodes=3):
@@ -29,7 +29,7 @@ def evaluate_model(model, task_name, episodes=3):
         obs, _ = env.reset()
         episode_reward = 0
         
-        for step in range(200):
+        for step in range(1000):
             action, _ = model.predict(obs, deterministic=True)
             obs, reward, done, _, _ = env.step(action)
             episode_reward += reward
@@ -43,8 +43,8 @@ def evaluate_model(model, task_name, episodes=3):
 
 # --- Conservative Training Phases ---
 training_phases = [
-    ("hover", 200_000),      # More time on basic hover
-    ("hover_extended",200_000),
+    ("hover", 3_000_000),      # More time on basic hover
+    ("circle",3_000_000),
     # ("circle", 150_000),     # Then introduce movement
     # ("waypoint_delivery", 150_000),
     # ("figure8", 200_000),    # Most complex task last
@@ -60,43 +60,39 @@ def train_fresh_start():
     print("   Previous models will be preserved in version history")
     print("   Training with improved reward function and conservative settings")
     
-    # Create fresh environment
-    #env = DummyVecEnv([lambda: make_env("hover")])
-    env = DummyVecEnv([lambda: make_env("hover") for _ in range(8)])
+    #env = DummyVecEnv([lambda: make_env('hover',gui=False)])
+    model = None  # will be created in first phase
 
-    env = VecNormalize(env, norm_obs=True, norm_reward=True, clip_obs=10.0)
-
-    # 🔧 Conservative PPO parameters for stable learning
-    model = PPO(
-        "MlpPolicy",
-        env,
-        verbose=1,
-        learning_rate=3e-5,
-        n_steps=1024,
-        batch_size=2048,
-        n_epochs=5,
-        gamma=0.998,
-        gae_lambda=0.90,
-        clip_range=0.1,
-        ent_coef=0.005,
-        vf_coef=0.5,
-        max_grad_norm=0.3,
-        tensorboard_log="./logs/ppo_drone/",
-        device="auto"
-    )
-
+    
     best_combined_score = -float('inf')
     best_model = None
     
     for phase, (task_name, timesteps) in enumerate(training_phases):
         print(f"\n🎯 PHASE {phase + 1}/{len(training_phases)}: {task_name} for {timesteps:,} steps")
-        
-        # Create environment for this phase
-        #env = DummyVecEnv([lambda: make_env(task_name)])
+        env = DummyVecEnv([lambda tn=task_name: make_env(tn, gui=False)])
 
-        env = VecNormalize(env, norm_obs=True, norm_reward=True, clip_obs=10.0)
-        
-        model.set_env(env)
+        #env = VecNormalize(env, norm_obs=True, norm_reward=True, clip_obs=10.0)
+        if model is None:
+            model = PPO(
+                    "MlpPolicy",
+                    env,
+                    verbose=1,
+                    learning_rate=3e-5,
+                    n_steps=1024,
+                    batch_size=64,
+                    n_epochs=5,
+                    gamma=0.998,
+                    gae_lambda=0.90,
+                    clip_range=0.1,
+                    ent_coef=0.005,
+                    vf_coef=0.5,
+                    max_grad_norm=0.3,
+                    tensorboard_log="./logs/ppo_drone/",
+                    device="auto"
+            )
+        else:
+            # Create environment for this phase
+            model.set_env(env)
         model.learn(
             total_timesteps=timesteps, 
             reset_num_timesteps=False,
@@ -142,12 +138,12 @@ def train_fresh_start():
         if combined_score > best_combined_score:
             best_combined_score = combined_score
             best_model = model
-            
+
             version_id = version_manager.save_best_model(
                 model=model,
                 performance_metrics=performance_metrics,
                 task_scores=task_scores,
-                notes=f"Fresh training - Phase {phase + 1}"
+                notes=f"Fresh training - Phase {phase + 1}",
             )
             
             # Early success check
@@ -158,17 +154,17 @@ def train_fresh_start():
     
     # Final summary
     print("\n" + "=" * 60)
-    print("🏁 FRESH TRAINING COMPLETE!")
+    print("FRESH TRAINING COMPLETE!")
     version_manager.print_version_history()
     
     best_version = version_manager.get_best_version()
-    print(f"\n🏆 BEST MODEL: {best_version}")
-    print(f"   Combined Score: {best_combined_score:.2f}")
+    print(f"\nBEST MODEL: {best_version}")
+    print(f"Combined Score: {best_combined_score:.2f}")
     
     # Save final model
     if best_model:
         best_model.save("models/PPO/ppo_drone_fresh_final")
-        env.save("models/PPO/vec_normalize_fresh.pkl")
+        #env.save("models/PPO/vec_normalize_fresh.pkl")
         print("💾 Final model saved as: models/PPO/ppo_drone_fresh_final.zip")
     
     return best_model

@@ -25,12 +25,12 @@ class DroneTester:
         model, version = self.version_manager.load_best_model()
         print(f"\n🎮 Testing: {model}, Version: {version}")
         print("=" * 50)
-        if model:
+        if  model:
             return model, version
         else:
             # Fallback to any available model
             try:
-                model = PPO.load("models/PPO/ppo_drone_latest.zip")
+                model = PPO.load("models/PPO/ppo_drone_fresh_final.zip")
                 return model, "latest"
             except:
                 try:
@@ -56,18 +56,19 @@ class DroneTester:
             )
         
         dummy_env = DummyVecEnv([make_env])
+        env = DroneEnv(task_name="hover", gui=True)
+
+        # # Load VecNormalize if available
+        # vec_path = "models/PPO/vec_normalize_fresh.pkl"
         
-        # Load VecNormalize if available
-        vec_path = "models/PPO/vec_normalize_fresh.pkl"
-        
-        if os.path.exists(vec_path):
-            print("📥 Loading VecNormalize stats...")
-            env = VecNormalize.load(vec_path, dummy_env)
-            env.training = False
-            env.norm_reward = False
-        else:
-            print("⚠️ No VecNormalize file found. Running without normalization.")
-            env = dummy_env
+        # if os.path.exists(vec_path):
+        #     print("📥 Loading VecNormalize stats...")
+        #     env = VecNormalize.load(vec_path, dummy_env)
+        #     env.training = False
+        #     env.norm_reward = False
+        # else:
+        #     print("⚠️ No VecNormalize file found. Running without normalization.")
+        #     env = dummy_env
         
         return env
     

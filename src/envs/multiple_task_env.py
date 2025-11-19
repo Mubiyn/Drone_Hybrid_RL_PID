@@ -28,6 +28,16 @@ class DroneEnv(gym.Env):
         self.task_name = task_name
         self.domain_randomization = domain_randomization
         self.gui = gui
+        self.TASK_IDS = {
+                    'hover': 0,
+                    'hover_extended': 1,
+                    'circle': 2,
+                    'figure8': 3,
+                    'waypoint_delivery': 4,
+                    'emergency_landing': 5
+                }
+        self.task_id = self.TASK_IDS.get(task_name, 0)
+
         
         # Select reward function
         if reward_fn is None:
@@ -79,7 +89,7 @@ class DroneEnv(gym.Env):
         self.observation_space = spaces.Box(
             low=-np.inf,
             high=np.inf,
-            shape=(20,),
+            shape=(28,),
             dtype=np.float32
         )
         
@@ -103,6 +113,22 @@ class DroneEnv(gym.Env):
         
         # Wind direction state
         self.wind_direction = None
+    def _build_observation(self, base_obs):
+        current_pos = base_obs[0:3]
+        target_pos = self.trajectory[min(self.trajectory_step, self.total_trajectory_steps - 1)]
+        pos_error = target_pos - current_pos
+        trajectory_progress = self.trajectory_step / max(1, self.total_trajectory_steps - 1)
+        task_id_normalized = np.array([self.task_id], dtype=np.float32)
+
+        aug_obs = np.concatenate([
+            base_obs,                  # 20
+            pos_error,                 # 3
+            target_pos,                # 3
+            np.array([trajectory_progress], dtype=np.float32),  # 1
+            task_id_normalized
+        ])
+        return aug_obs.astype(np.float32)
+
     
     def reset(self, seed=None, options=None):
         """Reset environment and apply domain randomization."""
@@ -125,7 +151,7 @@ class DroneEnv(gym.Env):
         # Rebuild trajectory in case task-dependent params change later
         self.trajectory = get_trajectory(self.task_name)
         self.total_trajectory_steps = len(self.trajectory)
-        self.max_steps = min(500, self.total_trajectory_steps)
+        self.max_steps = self.total_trajectory_steps
         
         # Apply domain randomization if enabled
         if self.domain_randomization:
@@ -137,7 +163,9 @@ class DroneEnv(gym.Env):
             p.changeDynamics(self.env.DRONE_IDS[0], -1, mass=self.current_mass, 
                              physicsClientId=self.env.CLIENT)
         
-        return obs[0].astype(np.float32), info
+        base_obs = obs[0].astype(np.float32)
+        aug_obs = self._build_observation(base_obs)
+        return aug_obs, info    
     
     def _apply_domain_randomization(self):
         """Apply domain randomization for robust training."""
@@ -184,8 +212,8 @@ class DroneEnv(gym.Env):
             # ---- 4) Global safety clamp around hover ----
             rpm_cmd = np.clip(
                 rpm_cmd,
-                0.9 * self.hover_rpm,
-                1.1 * self.hover_rpm
+                0.8 * self.hover_rpm,
+                1.3 * self.hover_rpm
             )
 
         # ---- 5) Apply motor efficiency ----
@@ -264,9 +292,9 @@ class DroneEnv(gym.Env):
             early_termination
         )
 
-        return current_obs.astype(np.float32), reward, done, False, info
-
-    
+        aug_obs = self._build_observation(current_obs)
+        return aug_obs, reward, done, False, info
+            
     def render(self):
         pass
     

@@ -19,7 +19,7 @@ from src.utils.metrics import evaluate_trajectory
 from src.testing.test_scenarios import OOD_SCENARIOS
 
 
-def run_ood_test(controller, task_name, scenario_name, scenario_params, gui=False):
+def run_ood_test(controller, task_name, scenario_name, scenario_params, gui=True):
     import pybullet as p
     trajectory = get_trajectory(task_name)
     

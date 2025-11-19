@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def hover_reward(current_pos, target_pos, obs, action, **kwargs):
+def hover_reward(current_pos, target_pos, obs, action,step_count, **kwargs):
     """Reward for stable hovering"""
     pos_error = np.linalg.norm(current_pos - target_pos)
     
@@ -14,6 +14,9 @@ def hover_reward(current_pos, target_pos, obs, action, **kwargs):
     angular_vel = obs[13:16]
     velocity_penalty = np.sum(np.square(linear_vel)) + np.sum(np.square(angular_vel))
     
+    if step_count < 50:
+        velocity_penalty *= 0.1   # much lighter penalty at start
+
     # Hover-specific rewards
     reward = -pos_error * 2.0                    # Position accuracy (higher weight)
     reward -= orientation_penalty * 0.5          # Stability
@@ -69,7 +72,7 @@ def waypoint_reward(current_pos, target_pos, obs, action, step_count,
         waypoint_bonus = 10.0 * (waypoint_index + 1)  # More reward for later waypoints
     
     # Efficiency penalty (encourage direct paths)
-    time_penalty = step_count * 0.01
+    time_penalty = step_count * 0.02
     
     # Orientation penalty (less critical for waypoints)
     rpy = obs[7:10]
