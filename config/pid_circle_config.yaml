@@ -1,0 +1,29 @@
+# PID Controller Configuration for the Circle Trajectory Task
+
+pid:
+  # Proportional gains [x, y, z]
+  kp: [0.4, 0.4, 1.2]
+  
+  # Integral gains [x, y, z]
+  ki: [0.01, 0.01, 0.05]
+  
+  # Derivative gains [x, y, z]
+  kd: [0.45, 0.45, 0.8]
+  
+  # Output limits for each axis
+  output_limits: [-1.0, 1.0]
+  
+  # Wind-up protection
+  integral_limits: [-0.5, 0.5]
+
+task:
+  name: circle
+
+environment:
+  physics: PyBullet
+  drone_model: cf2x
+  obs_type: kin
+  act_type: rpm
+  
+simulation:
+  aggregate_phy_steps: 5

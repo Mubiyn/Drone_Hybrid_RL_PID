@@ -1,10 +1,10 @@
 #!/bin/bash
 
-# Automated PID Baseline Data Collection
-# Runs all 6 tasks + OOD tests sequentially
-# Total estimated time: ~2-3 hours
+# Automated PID Baseline Data Collection Script
+# This script runs all 6 PID tasks and their corresponding OOD tests sequentially.
+# Total estimated time: ~1-2 hours depending on the machine.
 
-set -e  # Exit on error
+set -e # Exit immediately if a command exits with a non-zero status.
 
 echo "=========================================="
 echo "PID Baseline - Complete Data Collection"
@@ -12,13 +12,18 @@ echo "=========================================="
 echo ""
 
 # Navigate to project root
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/.." || exit
 PROJECT_ROOT=$(pwd)
 echo "Project root: $PROJECT_ROOT"
 echo ""
 
-# Activate conda environment
-echo "Activating conda environment: drone-rl-pid"
+# Activate conda environment.
+# This is a more robust way to activate conda, which works in most shell environments.
+echo "Activating conda environment: drone-rl-pid..."
+if ! command -v conda &> /dev/null; then
+    echo "Conda not found. Please ensure conda is installed and in your PATH."
+    exit 1
+fi
 source "$(conda info --base)/etc/profile.d/conda.sh"
 conda activate drone-rl-pid
 echo ""
@@ -42,7 +47,7 @@ for task in "${TASKS[@]}"; do
     echo "-------------------------------------------"
     python scripts/train_pid.py --task "$task"
     echo ""
-    echo "✓ Completed: $task"
+    echo "✓ Completed PID test for: $task"
     echo ""
     sleep 2  # Brief pause between tasks
 done
@@ -62,7 +67,7 @@ for task in "${TASKS[@]}"; do
     echo "-------------------------------------------"
     echo "Running OOD tests for: $task"
     echo "-------------------------------------------"
-    python scripts/test_ood.py --task "$task" --trials 5
+    python scripts/test_ood.py --task "$task" --trials 3 # Reduced trials for faster runs
     echo ""
     echo "✓ Completed OOD: $task"
     echo ""
@@ -81,18 +86,18 @@ echo "=========================================="
 echo ""
 echo "Data files saved to: results/data/"
 echo "  - Individual tasks: pid_<task>_*.json/csv"
-echo "  - OOD tests: pid_ood_<task>_*.json/csv"
+echo "  - OOD tests:      pid_ood_<task>_*.json/csv"
 echo ""
-echo "Total files expected: 24 (12 JSON + 12 CSV)"
+echo "Total files expected: ~24 (12 JSON + 12 CSV)"
 echo ""
 
 # Count files
-JSON_COUNT=$(ls results/data/pid_*.json 2>/dev/null | wc -l | tr -d ' ')
-CSV_COUNT=$(ls results/data/pid_*.csv 2>/dev/null | wc -l | tr -d ' ')
+JSON_COUNT=$(find results/data -name 'pid_*.json' 2>/dev/null | wc -l | tr -d ' ')
+CSV_COUNT=$(find results/data -name 'pid_*.csv' 2>/dev/null | wc -l | tr -d ' ')
 echo "Files created: $JSON_COUNT JSON, $CSV_COUNT CSV"
 echo ""
 
 echo "Next steps:"
 echo "  1. Review results in results/data/"
-echo "  2. Proceed to Week 2: PPO training (scripts/run_all_ppo.sh)"
+echo "  2. Proceed to Week 2: PPO training (e.g., using scripts/train_ppo.py)"
 echo ""

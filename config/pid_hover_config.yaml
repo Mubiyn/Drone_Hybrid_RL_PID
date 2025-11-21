@@ -2,13 +2,13 @@
 
 pid:
   # Proportional gains [x, y, z]
-  kp: [0.4, 0.4, 1.0]
+  kp: [0.4, 0.4, 1.2]
   
   # Integral gains [x, y, z]
-  ki: [0.0, 0.0, 0.1]
+  ki: [0.01, 0.01, 0.05]
   
   # Derivative gains [x, y, z]
-  kd: [0.2, 0.2, 0.5]
+  kd: [0.45, 0.45, 0.8]
   
   # Output limits for each axis
   output_limits: [-1.0, 1.0]
