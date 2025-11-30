@@ -78,5 +78,10 @@
     "timestamp": "2025-11-19T14:52:03.120230",
     "combined_score": -1896.5822057890014,
     "best_task": "hover"
+  },
+  "v17": {
+    "timestamp": "2025-11-19T20:13:30.569484",
+    "combined_score": -1229.0528443179405,
+    "best_task": "hover"
   }
 }

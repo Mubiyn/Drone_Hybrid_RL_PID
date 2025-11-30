@@ -115,7 +115,8 @@ class DroneEnv(gym.Env):
         self.wind_direction = None
     def _build_observation(self, base_obs):
         current_pos = base_obs[0:3]
-        target_pos = self.trajectory[min(self.trajectory_step, self.total_trajectory_steps - 1)]
+        #target_pos = self.trajectory[min(self.trajectory_step, self.total_trajectory_steps - 1)]
+        target_pos = np.array([0, 0, 1.0])
         pos_error = target_pos - current_pos
         trajectory_progress = self.trajectory_step / max(1, self.total_trajectory_steps - 1)
         task_id_normalized = np.array([self.task_id], dtype=np.float32)
@@ -220,18 +221,18 @@ class DroneEnv(gym.Env):
         action_modified = rpm_cmd * self.motor_efficiency
 
         # ---- 6) Apply wind disturbance (if any) ----
-        if self.wind_speed > 0:
-            if self.wind_direction is None:
-                self.wind_direction = np.random.uniform(-np.pi, np.pi)
-            wind_force = np.array([
-                self.wind_speed * np.cos(self.wind_direction),
-                self.wind_speed * np.sin(self.wind_direction),
-                0.0
-            ]) * self.current_mass
-            p.applyExternalForce(
-                self.env.DRONE_IDS[0], -1, wind_force, [0, 0, 0],
-                p.WORLD_FRAME, physicsClientId=self.env.CLIENT
-            )
+        # if self.wind_speed > 0:
+        #     if self.wind_direction is None:
+        #         self.wind_direction = np.random.uniform(-np.pi, np.pi)
+        #     wind_force = np.array([
+        #         self.wind_speed * np.cos(self.wind_direction),
+        #         self.wind_speed * np.sin(self.wind_direction),
+        #         0.0
+        #     ]) * self.current_mass
+        #     p.applyExternalForce(
+        #         self.env.DRONE_IDS[0], -1, wind_force, [0, 0, 0],
+        #         p.WORLD_FRAME, physicsClientId=self.env.CLIENT
+        #     )
 
         # ---- 7) Step environment ----
         obs, _, terminated, truncated, info = self.env.step(np.array([action_modified]))
@@ -239,7 +240,9 @@ class DroneEnv(gym.Env):
 
         # Current state and target
         current_pos = current_obs[0:3]
-        target_pos = self.trajectory[min(self.trajectory_step, self.total_trajectory_steps - 1)]
+        #target_pos = self.trajectory[min(self.trajectory_step, self.total_trajectory_steps - 1)]
+        target_pos = np.array([0, 0, 1.0])
+
         rpy = current_obs[7:10]
 
         # Trajectory progress (0–1) for trajectory-style tasks

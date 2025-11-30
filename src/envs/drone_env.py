@@ -29,6 +29,7 @@ class DroneEnv(gym.Env):
         self.task_name = task_name
         self.reward_fn = reward_fn
         self.domain_randomization = domain_randomization
+        
         self.gui = gui
         
         # Get trajectory
@@ -44,6 +45,7 @@ class DroneEnv(gym.Env):
             num_drones=1,
             initial_xyzs=np.array([self.initial_pos]),
             physics=Physics.PYB,
+
             gui=gui,
             record=False,
             pyb_freq=240,

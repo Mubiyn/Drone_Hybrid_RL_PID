@@ -5,7 +5,7 @@ from stable_baselines3.common.env_util import DummyVecEnv
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root)
 
-from src.envs.general_env import QuadcopterEnv
+from src.envs.fly_env import QuadcopterEnv
 #from src.controllers.PPO import PPO
 from stable_baselines3.ppo import PPO
 
@@ -89,8 +89,8 @@ def live_plot():
 
     return update
 
-def make_env(tasks,**kwargs):
-    return QuadcopterEnv(tasks=tasks,**kwargs)
+def make_env(task,**kwargs):
+    return QuadcopterEnv(task=task,**kwargs)
 
 if __name__ == "__main__":
 
@@ -98,7 +98,7 @@ if __name__ == "__main__":
     #env = make_env(task="circle", render_mode="none")
 
     #env = DummyVecEnv([lambda: env])
-    env = DummyVecEnv([lambda: make_env(tasks=["circle", "figure8", "four_points", "goto"],mode="train", render_mode="none") for _ in range(8)])
+    env = DummyVecEnv([lambda: make_env("circle", render_mode="none") for _ in range(8)])
     
 
     model = PPO(
@@ -120,6 +120,6 @@ if __name__ == "__main__":
     
     plot_cb = LiveRewardPlot()
 
-    model.learn(total_timesteps=2_000_000, progress_bar=True, callback=plot_cb)
+    model.learn(total_timesteps=1_000_000, progress_bar=True, callback=plot_cb)
 
-    model.save("models/general_policy_new")
+    model.save("models/circle_policy_new")

@@ -2,13 +2,13 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 import sys, os
-
+import pybullet as p
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, root)
 
 from stable_baselines3.ppo import PPO
 from stable_baselines3.common.env_util import DummyVecEnv
-from src.envs.general_env import QuadcopterEnv
+from src.envs.focal_env import QuadcopterEnv
 
 
 def test_task(model_path, task="circle", max_steps=5000):
@@ -16,25 +16,21 @@ def test_task(model_path, task="circle", max_steps=5000):
     print(f"[TEST] Loading model from: {model_path}")
     print(f"[TEST] Selected task: {task}")
 
-    # Create environment with ALL tasks (same obs shape as training)
+    # Create environment for the SINGLE TASK
     env = DummyVecEnv([
-        lambda: QuadcopterEnv(mode="test", task=task, render_mode="human")#,custom_target=[0.0,0.5, 2.0])
+        lambda: QuadcopterEnv(task=task, render_mode="human")
     ])
 
     # Load model
-    model = PPO.load(model_path, env=env)
+    model = PPO.load(model_path, env=env,verbose=1)
 
-    # Force the selected task
-    env.envs[0].task = task
-    env.envs[0].waypoints = env.envs[0]._build_waypoints(task)
-    env.envs[0].wp_idx = 0
-    env.envs[0].phase = "hover"
-
-    # Reset environment
+    # Reset env
     obs = env.reset()
 
-    drone_path = []
+    # Get ideal path for plotting
     ideal_path = np.array(env.envs[0].waypoints)
+    drone_path = []
+
 
     for step in range(max_steps):
 
@@ -49,10 +45,10 @@ def test_task(model_path, task="circle", max_steps=5000):
             break
 
         time.sleep(1/80)
-
+    
     drone_path = np.array(drone_path)
 
-    # 2D Plot
+    # -------------------- 2D XY Plot --------------------
     plt.figure(figsize=(7,7))
     plt.plot(ideal_path[:,0], ideal_path[:,1], 'r--', label="Ideal path")
     plt.plot(drone_path[:,0], drone_path[:,1], 'b-', label="Drone")
@@ -63,7 +59,7 @@ def test_task(model_path, task="circle", max_steps=5000):
     plt.title(f"2D XY Path – {task}")
     plt.show()
 
-    # 3D Plot
+    # -------------------- 3D Plot --------------------
     fig = plt.figure(figsize=(8,6))
     ax = fig.add_subplot(111, projection="3d")
     ax.plot(ideal_path[:,0], ideal_path[:,1], ideal_path[:,2], 'r--')
@@ -72,7 +68,7 @@ def test_task(model_path, task="circle", max_steps=5000):
     plt.show()
 
     print("[TEST] Finished.")
-
-
+    
 if __name__ == "__main__":
-    test_task("models/multi_policy.zip", task="circle", max_steps=5000)
+
+    test_task("models/multi_policy.zip", task="figure8", max_steps=7000)
