@@ -8,7 +8,7 @@ __all__ = ['PPOTrainer', 'DroneTaskEnv', 'get_reward_function']
 
 
 __all__ = [
-    'PPOTrainer',
-    'DomainRandomizer',
-    'TrainingCallback',
+    # 'PPOTrainer',
+    # 'DomainRandomizer',
+    # 'TrainingCallback',
 ]

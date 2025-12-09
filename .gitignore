@@ -43,12 +43,12 @@ venv.bak/
 # Training outputs
 logs/
 runs/
-models/*.zip
-models/ppo/*.zip
-models/hybrid/*.zip
-!models/ppo/README.md
-!models/hybrid/README.md
-*.pkl
+# models/*.zip
+# models/ppo/*.zip
+# models/hybrid/*.zip
+# !models/ppo/README.md
+# !models/hybrid/README.md
+# *.pkl
 *.pth
 *.pt
 
@@ -89,7 +89,7 @@ mlruns/
 
 # Large files
 *.tar.gz
-*.zip
+# *.zip
 *.h5
 
 # OS
