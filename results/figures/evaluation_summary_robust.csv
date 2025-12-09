@@ -1,0 +1,10 @@
+Task,Controller,RMSE,Mean Error
+hover,PID,1.682611,0.67990255
+hover,Hybrid (Robust),0.16282214,0.08166055
+circle,PID,1.7393574,0.9850079
+circle,Hybrid (Robust),0.3169022,0.15355109
+figure8,PID,1.0577575,0.6715584
+figure8,Hybrid (Robust),0.35510045,0.21373929
+spiral,PID,0.7929142,0.52710736
+spiral,Hybrid (Robust),0.3232533,0.160397
+waypoint,PID,0.35562727,0.30865926
