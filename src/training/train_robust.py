@@ -4,7 +4,7 @@ from datetime import datetime
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.vec_env import VecNormalize
-from stable_baselines3.common.callbacks import CheckpointCallback
+from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 
 from src.envs.HybridAviary import HybridAviary
 from src.training.configs import PPO_CONFIG, TRAIN_CONFIG
@@ -40,10 +40,34 @@ def train_robust_hybrid(trajectory_type='hover', enable_dr=True):
     hybrid_config = PPO_CONFIG.copy()
     hybrid_config["learning_rate"] = 5e-4  # Slightly higher for faster adaptation
     
-    model = PPO(env=env, tensorboard_log=None, **hybrid_config)
+    model = PPO(env=env, tensorboard_log=log_dir, **hybrid_config)
     
-    # Callbacks
-    checkpoint_callback = CheckpointCallback(save_freq=100000, save_path=log_dir, name_prefix=f"hybrid_{type_str}_model")
+    # Create separate eval environment (same config, no training)
+    eval_env = make_vec_env(make_robust_hybrid_env(trajectory_type, enable_dr), n_envs=1)
+    eval_env = VecNormalize(eval_env, norm_obs=False, norm_reward=True, clip_reward=10., training=False)
+    # Train
+    print(f"Starting Hybrid ({type_str.upper()}) training for {trajectory_type}...")
+    try:
+        model.learn(total_timesteps=TRAIN_CONFIG["total_timesteps"], callback=callbacks)
+        save_path=log_dir, 
+        name_prefix=f"hybrid_{type_str}_model"
+    )
+    
+    # CRITICAL: EvalCallback to save BEST model (not just final)
+    eval_callback = EvalCallback(
+        eval_env,
+        best_model_save_path=log_dir,
+        log_path=log_dir,
+        eval_freq=10000,  # Evaluate every 10k steps
+        n_eval_episodes=5,
+        deterministic=True,
+        render=False,
+        verbose=1
+    )
+    
+    # Combine callbacks
+    from stable_baselines3.common.callbacks import CallbackList
+    callbacks = CallbackList([checkpoint_callback, eval_callback])
     
     # Train
     print(f"Starting Hybrid ({type_str.upper()}) training for {trajectory_type}...")
@@ -62,8 +86,16 @@ def train_robust_hybrid(trajectory_type='hover', enable_dr=True):
         model.save(f"{models_dir}/final_model")
         env.save(f"{models_dir}/vec_normalize.pkl")
         
-        print(f"Model saved to {log_dir} and {models_dir}")
-        print(f"Model saved to {log_dir} and {models_dir}")
+        # Copy best_model if it exists (from EvalCallback)
+        import shutil
+        best_model_path = f"{log_dir}/best_model.zip"
+        if os.path.exists(best_model_path):
+            shutil.copy(best_model_path, f"{models_dir}/best_model.zip")
+            print(f"✓ Best model saved to {models_dir}/best_model.zip")
+        
+        print(f"✓ Final model saved to {log_dir} and {models_dir}")
+        print(f"  Use best_model.zip for deployment (highest eval reward)")
+        print(f"  Use final_model.zip only if best_model doesn't exist")
 
 if __name__ == "__main__":
     import argparse

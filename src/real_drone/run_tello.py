@@ -1,27 +1,70 @@
 import time
 import numpy as np
 import argparse
+import pickle
+import torch
+import torch.nn as nn
+from pathlib import Path
 from src.real_drone.TelloWrapper import TelloWrapper
 from src.controllers.pid_controller import VelocityPIDController
 from src.utils.trajectories import TrajectoryGenerator
 from stable_baselines3 import PPO
 
+
+class BehaviorCloningPolicy(nn.Module):
+    """Neural network policy for imitating manual flight (matches training script)"""
+    
+    def __init__(self, state_dim=12, action_dim=4, hidden_sizes=[256, 256]):
+        super().__init__()
+        
+        layers = []
+        in_dim = state_dim
+        
+        for hidden_size in hidden_sizes:
+            layers.append(nn.Linear(in_dim, hidden_size))
+            layers.append(nn.ReLU())
+            layers.append(nn.LayerNorm(hidden_size))
+            in_dim = hidden_size
+        
+        layers.append(nn.Linear(in_dim, action_dim))
+        layers.append(nn.Tanh())
+        
+        self.network = nn.Sequential(*layers)
+        
+        self.state_mean = None
+        self.state_std = None
+    
+    def forward(self, state):
+        if self.state_mean is not None:
+            state = (state - self.state_mean) / (self.state_std + 1e-8)
+        return self.network(state)
+    
+    def set_normalization(self, mean, std):
+        """Set state normalization parameters"""
+        self.state_mean = torch.FloatTensor(mean)
+        self.state_std = torch.FloatTensor(std)
+
+
 def run_tello_trajectory(controller_type='pid', model_path=None, trajectory_type='hover', 
-                         duration=10.0, use_mocap=False):
+                         trajectory_file=None, duration=10.0, use_mocap=False):
     """
     Run Tello drone with PID or Hybrid RL controller.
     
     Args:
-        controller_type: 'pid' or 'hybrid'
-        model_path: Path to trained PPO model (for hybrid)
-        trajectory_type: 'hover', 'circle', etc.
+        controller_type: 'pid' or 'hybrid' or 'manual_bc' (behavioral cloning)
+        model_path: Path to trained model (PPO for hybrid, .pth for manual_bc)
+        trajectory_type: 'hover', 'circle', etc. (ignored if trajectory_file provided)
+        trajectory_file: Path to learned trajectory .pkl file (from train_pid_from_manual.py)
         duration: Flight duration in seconds
         use_mocap: Whether to use motion capture system
     """
     print("=" * 60)
     print(f"Tello Real Drone Test")
     print(f"Controller: {controller_type.upper()}")
-    print(f"Trajectory: {trajectory_type}")
+    if trajectory_file:
+        print(f"Trajectory: {trajectory_file}")
+    else:
+        print(f"Trajectory: {trajectory_type}")
     print(f"Duration: {duration}s")
     print("=" * 60)
     
@@ -46,8 +89,10 @@ def run_tello_trajectory(controller_type='pid', model_path=None, trajectory_type
     # Conservative PID gains for real Tello (much gentler than simulation)
     pid = VelocityPIDController(kp=0.4, max_vel=0.5)  # Reduced from 0.8
     
-    # Load Hybrid RL model if needed
+    # Load model if needed
     rl_model = None
+    bc_model = None
+    
     if controller_type == 'hybrid':
         if model_path is None:
             print("ERROR: Hybrid controller requires model_path")
@@ -59,12 +104,50 @@ def run_tello_trajectory(controller_type='pid', model_path=None, trajectory_type
             print(f"Failed to load model: {e}")
             return
     
+    elif controller_type == 'manual_bc':
+        if model_path is None:
+            print("ERROR: Manual BC controller requires model_path")
+            return
+        try:
+            checkpoint = torch.load(model_path, map_location='cpu')
+            state_dim = checkpoint['state_dim']
+            action_dim = checkpoint['action_dim']
+            hidden_sizes = checkpoint['hidden_sizes']
+            
+            bc_model = BehaviorCloningPolicy(state_dim, action_dim, hidden_sizes)
+            bc_model.load_state_dict(checkpoint['model_state_dict'])
+            bc_model.set_normalization(checkpoint['state_mean'], checkpoint['state_std'])
+            bc_model.eval()
+            print(f"Loaded BC model from {model_path}")
+            print(f"  State dim: {state_dim}, Action dim: {action_dim}")
+        except Exception as e:
+            print(f"Failed to load BC model: {e}")
+            import traceback
+            traceback.print_exc()
+            return
+    
     # Initialize trajectory
-    # Smaller, slower trajectory for real drone
-    traj = TrajectoryGenerator(trajectory_type=trajectory_type, 
-                               radius=0.5,  # Reduced from 0.8m for safety
-                               height=1.0,
-                               duration=15.0)  # Slower trajectory
+    if trajectory_file:
+        try:
+            with open(trajectory_file, 'rb') as f:
+                learned_traj = pickle.load(f)
+            waypoints = learned_traj['waypoints']
+            waypoint_times = learned_traj['waypoint_times']
+            print(f"Loaded learned trajectory: {learned_traj['trajectory_label']}")
+            print(f"  Waypoints: {len(waypoints)}")
+            print(f"  Duration: {learned_traj['duration']:.1f}s")
+            traj = None  # Will interpolate waypoints manually
+        except Exception as e:
+            print(f"Failed to load trajectory file: {e}")
+            return
+    else:
+        # Use generated trajectory
+        traj = TrajectoryGenerator(trajectory_type=trajectory_type, 
+                                   radius=0.5,  # Reduced from 0.8m for safety
+                                   height=1.0,
+                                   duration=duration)  # Match flight duration
+        waypoints = None
+        waypoint_times = None
     
     # Safety check
     print(f"\nBattery: {tello.get_battery()}%")
@@ -101,7 +184,22 @@ def run_tello_trajectory(controller_type='pid', model_path=None, trajectory_type
             current_pos = obs[0:3]
             
             # Get target from trajectory
-            target_pos, target_vel, _ = traj.get_target(t)
+            if waypoints is not None:
+                # Interpolate learned trajectory waypoints
+                t_normalized = t / waypoint_times[-1]  # Normalize to [0, 1]
+                t_traj = t_normalized * waypoint_times[-1]
+                
+                idx = np.searchsorted(waypoint_times, t_traj)
+                if idx == 0:
+                    target_pos = waypoints[0]
+                elif idx >= len(waypoints):
+                    target_pos = waypoints[-1]
+                else:
+                    alpha = (t_traj - waypoint_times[idx-1]) / (waypoint_times[idx] - waypoint_times[idx-1])
+                    target_pos = (1 - alpha) * waypoints[idx-1] + alpha * waypoints[idx]
+                target_vel = np.zeros(3)
+            else:
+                target_pos, target_vel, _ = traj.get_target(t)
             
             # Compute position error
             pos_error = np.linalg.norm(current_pos - target_pos)
@@ -111,6 +209,13 @@ def run_tello_trajectory(controller_type='pid', model_path=None, trajectory_type
             if controller_type == 'pid':
                 # Pure PID control
                 action_vel = pid.compute_control(obs, target_pos)
+            
+            elif controller_type == 'manual_bc':
+                # Behavioral cloning: Direct imitation of manual actions
+                with torch.no_grad():
+                    obs_tensor = torch.FloatTensor(obs).unsqueeze(0)  # Add batch dim
+                    action_tensor = bc_model(obs_tensor)
+                    action_vel = action_tensor.squeeze(0).numpy()  # [lr, fb, ud, yaw]
                 
             elif controller_type == 'hybrid':
                 # Hybrid: PID + RL residual
@@ -192,28 +297,34 @@ def run_tello_trajectory(controller_type='pid', model_path=None, trajectory_type
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Tello Real Drone Controller")
     parser.add_argument('--controller', type=str, default='pid', 
-                       choices=['pid', 'hybrid'],
-                       help='Controller type')
+                       choices=['pid', 'hybrid', 'manual_bc'],
+                       help='Controller type: pid (PID only), hybrid (PID+RL), manual_bc (behavioral cloning)')
     parser.add_argument('--model', type=str, default=None,
-                       help='Path to trained model (for hybrid)')
+                       help='Path to trained model (PPO .zip for hybrid, .pth for manual_bc)')
     parser.add_argument('--traj', type=str, default='hover',
-                       help='Trajectory type')
-    parser.add_argument('--duration', type=float, default=10.0,
-                       help='Flight duration in seconds')
+                       help='Trajectory type (hover, circle, figure8, etc.)')
+    parser.add_argument('--trajectory-file', type=str, default=None,
+                       help='Path to learned trajectory .pkl file (from train_pid_from_manual.py)')
+    parser.add_argument('--duration', type=float, default=15.0,
+                        help='Flight duration in seconds (15s = 1 full circle/figure8)')
     parser.add_argument('--mocap', action='store_true',
                        help='Use motion capture system')
     
     args = parser.parse_args()
     
-    # Auto-select model path if hybrid controller
+    # Auto-select model path if needed
     if args.controller == 'hybrid' and args.model is None:
         args.model = f"models/hybrid_robust/{args.traj}/final_model.zip"
-        print(f"Using default model: {args.model}")
+        print(f"Using default hybrid model: {args.model}")
+    elif args.controller == 'manual_bc' and args.model is None:
+        args.model = "models/manual_bc/best_model.pth"
+        print(f"Using default BC model: {args.model}")
     
     run_tello_trajectory(
         controller_type=args.controller,
         model_path=args.model,
         trajectory_type=args.traj,
+        trajectory_file=args.trajectory_file,
         duration=args.duration,
         use_mocap=args.mocap
     )

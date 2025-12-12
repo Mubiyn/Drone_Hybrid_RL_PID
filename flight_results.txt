@@ -1,0 +1,30 @@
+================================================
+Tello Real Drone Controller
+================================================
+Controller: hybrid
+Trajectory: circle
+Duration: 40s
+Motion Capture: DISABLED (using Tello sensors)
+
+SAFETY CHECKLIST:
+  [ ] Battery > 30%
+  [ ] Clear flying space (3m x 3m minimum)
+  [ ] Tello is powered on and visible
+  [ ] Emergency stop ready (Ctrl+C)
+  [ ] Drone on flat surface for takeoff
+
+================================================
+Using default model: models/hybrid_robust/circle/final_model.zip
+============================================================
+Tello Real Drone Test
+Controller: HYBRID
+Trajectory: circle
+Duration: 40.0s
+============================================================
+Tello Connected - Battery: 71%
+Using MoCap: False
+State Estimator: True
+Loaded RL model from models/hybrid_robust/circle/final_model.zip
+
+Battery: 71%
+Ready to takeoff. Press Enter to start (Ctrl+C to abort)...
