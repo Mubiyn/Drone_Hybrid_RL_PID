@@ -1,0 +1,12 @@
+{
+  "timestamp": "20251212_194341",
+  "episode_id": 1,
+  "trajectory_label": "figure8",
+  "duration": 52.3304078578949,
+  "samples": 975,
+  "use_mocap": false,
+  "sample_rate": 18.631614770663504,
+  "battery_start": 30,
+  "battery_end": 12,
+  "battery_used": 18
+}
