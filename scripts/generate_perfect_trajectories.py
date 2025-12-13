@@ -94,11 +94,24 @@ def generate_figure8(center, radius, num_points, height, include_approach=True):
 
 
 def generate_spiral(center, radius, num_points, height_start, height_end, include_approach=True):
-    """Generate upward/downward spiral with optional approach"""
-    angles = np.linspace(0, 4*np.pi, num_points, endpoint=False)  # 2 full rotations
-    heights = np.linspace(height_start, height_end, num_points)
+    """Generate upward/downward spiral that returns to start height (loopable)"""
+    # 2 full rotations: spiral up then spiral back down to same height
+    total_points = num_points
+    half_points = total_points // 2
     
-    waypoints = np.zeros((num_points, 3))
+    # First half: spiral up
+    angles_up = np.linspace(0, 2*np.pi, half_points, endpoint=False)
+    heights_up = np.linspace(height_start, height_end, half_points)
+    
+    # Second half: spiral down back to start height
+    angles_down = np.linspace(2*np.pi, 4*np.pi, total_points - half_points, endpoint=False)
+    heights_down = np.linspace(height_end, height_start, total_points - half_points)
+    
+    # Combine
+    angles = np.concatenate([angles_up, angles_down])
+    heights = np.concatenate([heights_up, heights_down])
+    
+    waypoints = np.zeros((len(angles), 3))
     waypoints[:, 0] = center[0] + radius * np.cos(angles)
     waypoints[:, 1] = center[1] + radius * np.sin(angles)
     waypoints[:, 2] = heights
@@ -228,8 +241,8 @@ def main():
                         help='Duration for one complete trajectory loop (auto-calculated if not provided)')
     parser.add_argument('--num-points', type=int, default=36,
                         help='Number of waypoints per trajectory')
-    parser.add_argument('--radius', type=float, default=0.5,
-                        help='Circle radius in meters (default: 0.5m)')
+    parser.add_argument('--radius', type=float, default=0.45,
+                        help='Circle radius in meters (default: 0.45m)')
     parser.add_argument('--height', type=float, default=0.8,
                         help='Flight height in meters (default: 0.8m)')
     parser.add_argument('--velocity', type=float, default=0.3,

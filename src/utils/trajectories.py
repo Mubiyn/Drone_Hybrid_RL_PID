@@ -3,7 +3,7 @@ import numpy as np
 class TrajectoryGenerator:
     """
     Generates target trajectories for drone tracking tasks.
-    Supported types: 'hover', 'circle', 'figure8', 'spiral', 'waypoint'
+    Supported types: 'hover', 'circle', 'figure8', 'spiral', 'waypoint', 'square'
     """
     def __init__(self, trajectory_type='hover', duration=10.0, radius=1.0, height=1.0):
         self.trajectory_type = trajectory_type
@@ -43,6 +43,8 @@ class TrajectoryGenerator:
             return self._spiral(t)
         elif self.trajectory_type == 'waypoint':
             return self._waypoint(t)
+        elif self.trajectory_type == 'square':
+            return self._square(t)
         else:
             raise ValueError(f"Unknown trajectory type: {self.trajectory_type}")
 
@@ -133,6 +135,44 @@ class TrajectoryGenerator:
         pos = (1 - alpha) * p_start + alpha * p_end
         
         vel = (p_end - p_start) / segment_duration
+        yaw = 0.0
+        
+        return pos, vel, yaw
+
+    def _square(self, t):
+        """Square path in XY plane"""
+        # Square with side length 2*radius, centered at origin
+        side_length = 2 * self.radius
+        perimeter = 4 * side_length
+        speed = perimeter / self.duration
+        
+        # Distance traveled
+        dist = (speed * t) % perimeter
+        
+        # Determine which side we're on
+        if dist < side_length:  # Bottom side (moving right)
+            x = -self.radius + dist
+            y = -self.radius
+            vx = speed
+            vy = 0
+        elif dist < 2 * side_length:  # Right side (moving up)
+            x = self.radius
+            y = -self.radius + (dist - side_length)
+            vx = 0
+            vy = speed
+        elif dist < 3 * side_length:  # Top side (moving left)
+            x = self.radius - (dist - 2 * side_length)
+            y = self.radius
+            vx = -speed
+            vy = 0
+        else:  # Left side (moving down)
+            x = -self.radius
+            y = self.radius - (dist - 3 * side_length)
+            vx = 0
+            vy = -speed
+        
+        pos = np.array([x, y, self.height])
+        vel = np.array([vx, vy, 0])
         yaw = 0.0
         
         return pos, vel, yaw
