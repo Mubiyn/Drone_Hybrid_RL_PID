@@ -9,6 +9,7 @@ class HybridAviary(BaseTrackAviary):
     """
     Hybrid Environment: PID + Residual RL.
     The RL agent outputs a residual correction to the PID's RPM command.
+    Uses RPM for simulation training, converts to velocity for real Tello deployment.
     """
     def __init__(self, 
                  trajectory_type='hover', 
@@ -20,7 +21,9 @@ class HybridAviary(BaseTrackAviary):
                  record=False,
                  obs=ObservationType.KIN,
                  act=ActionType.RPM,
-                 domain_randomization=False):
+                 domain_randomization=False,
+                 pid_kp=None,
+                 pid_max_vel=None):
         
         super().__init__(trajectory_type=trajectory_type,
                          drone_model=drone_model,
@@ -32,12 +35,34 @@ class HybridAviary(BaseTrackAviary):
                          obs=obs,
                          act=act)
         
+        # Tuned PID gains per trajectory (from autonomous data collection tuning)
+        TUNED_GAINS = {
+            'circle': {'kp': 0.8, 'max_vel': 0.9},
+            'square': {'kp': 0.7, 'max_vel': 0.8},
+            'figure8': {'kp': 0.4, 'max_vel': 0.5},
+            'spiral': {'kp': 0.8, 'max_vel': 0.9},
+            'hover': {'kp': 0.6, 'max_vel': 0.7}
+        }
+        
+        # Use provided gains or trajectory-specific tuned gains
+        if pid_kp is not None and pid_max_vel is not None:
+            kp = pid_kp
+            max_vel = pid_max_vel
+        elif trajectory_type in TUNED_GAINS:
+            kp = TUNED_GAINS[trajectory_type]['kp']
+            max_vel = TUNED_GAINS[trajectory_type]['max_vel']
+        else:
+            kp = 1.0
+            max_vel = 1.0
+        
         # Initialize internal PID controller
         if self.ACT_TYPE == ActionType.RPM:
             self.pid_controller = PIDController(drone_model=drone_model, freq=freq)
-            self.residual_scale = 200.0 # RPM (Smaller corrections for stability)
+            # Reduce residual scale for better stability (especially for circle)
+            self.residual_scale = 100.0 # RPM (was 200, reduced for stability)
         elif self.ACT_TYPE == ActionType.VEL:
-            self.pid_controller = VelocityPIDController(kp=1.0, max_vel=1.0)
+            # VEL mode only for real Tello deployment, not for training
+            self.pid_controller = VelocityPIDController(kp=kp, max_vel=max_vel)
             self.residual_scale = 0.5 # m/s
         
         # Domain Randomization

@@ -153,6 +153,10 @@ class AutonomousTelloController:
         # Trajectory
         self.trajectory_start_time = None
         self.learned_traj = None  # For learned trajectories
+        self.approach_waypoints = None  # Approach phase (executed once)
+        self.loop_waypoints = None  # Loop phase (repeats)
+        self.approach_duration = 0.0
+        self.loop_duration = 0.0
         self.waypoints = [
             (0.02, 0.02, 1.0),
             (0.02, -0.02, 1.008),
@@ -168,6 +172,44 @@ class AutonomousTelloController:
     def set_learned_trajectory(self, learned_traj):
         """Set learned trajectory from .pkl file"""
         self.learned_traj = learned_traj
+        
+        # Separate approach waypoints (from ground to trajectory start) from loop waypoints
+        # Approach waypoints start at [0,0,0] and end at the trajectory height
+        waypoints = learned_traj['waypoints']
+        waypoint_times = learned_traj['waypoint_times']
+        
+        # Find where approach ends (when Z stops changing significantly)
+        z_values = waypoints[:, 2]
+        target_z = z_values[-1]  # Final height
+        
+        # Approach ends when we're within 5cm of target height
+        approach_end_idx = 0
+        for i in range(len(waypoints)):
+            if abs(z_values[i] - target_z) < 0.05:
+                approach_end_idx = i
+                break
+        
+        if approach_end_idx > 0:
+            # Split into approach and loop
+            self.approach_waypoints = waypoints[:approach_end_idx+1]
+            self.approach_times = waypoint_times[:approach_end_idx+1]
+            self.approach_duration = waypoint_times[approach_end_idx]
+            
+            # Loop waypoints (rest of trajectory, shifted to start at t=0)
+            self.loop_waypoints = waypoints[approach_end_idx:]
+            self.loop_times = waypoint_times[approach_end_idx:] - waypoint_times[approach_end_idx]
+            self.loop_duration = self.loop_times[-1]
+            
+            print(f"\n📍 Trajectory split:")
+            print(f"   Approach: {len(self.approach_waypoints)} waypoints, {self.approach_duration:.1f}s")
+            print(f"   Loop: {len(self.loop_waypoints)} waypoints, {self.loop_duration:.1f}s")
+        else:
+            # No approach phase, use entire trajectory as loop
+            self.approach_waypoints = None
+            self.loop_waypoints = waypoints
+            self.loop_times = waypoint_times
+            self.loop_duration = waypoint_times[-1]
+            print(f"\n📍 No approach phase, using full trajectory as loop")
         self.waypoints = learned_traj['waypoints']
         print(f"   ✓ Loaded {len(self.waypoints)} waypoints")
     
@@ -308,13 +350,19 @@ class AutonomousTelloController:
         """Get target position and velocity from trajectory"""
         # Use learned trajectory waypoints if available
         if self.learned_traj is not None:
-            waypoints = self.learned_traj['waypoints']
-            waypoint_times = self.learned_traj['waypoint_times']
-            duration = self.learned_traj['duration']
-            
-            # Loop the trajectory
-            t_normalized = (t_elapsed % duration) / duration
-            t_traj = t_normalized * duration
+            # During approach phase (first time only)
+            if self.approach_waypoints is not None and t_elapsed < self.approach_duration:
+                waypoints = self.approach_waypoints
+                waypoint_times = self.approach_times
+                t_traj = t_elapsed
+            else:
+                # Loop phase (repeats continuously)
+                waypoints = self.loop_waypoints
+                waypoint_times = self.loop_times
+                
+                # Adjust time for approach offset and loop
+                t_after_approach = t_elapsed - (self.approach_duration if self.approach_waypoints is not None else 0)
+                t_traj = t_after_approach % self.loop_duration
             
             # Interpolate between waypoints
             idx = np.searchsorted(waypoint_times, t_traj)
@@ -589,7 +637,7 @@ def tune_pid_gains(args):
         battery = tello.get_battery()
         print(f"   ✓ Battery: {battery}%")
         
-        if battery < 20:
+        if battery < 10:
             print("   ✗ Battery too low! Charge before flying.")
             return
         
@@ -732,7 +780,7 @@ def tune_pid_gains(args):
 def main():
     parser = argparse.ArgumentParser(description="Autonomous Tello data collection")
     parser.add_argument('--trajectory', type=str, default='circle',
-                        choices=['circle', 'figure8', 'spiral', 'waypoint', 'hover'],
+                        choices=['circle', 'square', 'figure8', 'spiral', 'hover'],
                         help='Trajectory type')
     parser.add_argument('--trajectory-file', type=str, default=None,
                         help='Path to learned trajectory .pkl file (overrides --trajectory)')
