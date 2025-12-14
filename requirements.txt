@@ -1,3 +1,15 @@
+# Drone Hybrid RL-PID Control - Python Dependencies
+# 
+# Installation:
+#   pip install -r requirements.txt
+#   cd gym-pybullet-drones && pip install -e .
+#
+# Note: For Apple Silicon, install pybullet via conda:
+#   conda install -c conda-forge pybullet
+#
+# For GPU support, install PyTorch with CUDA:
+#   pip install torch>=1.12.1 --index-url https://download.pytorch.org/whl/cu117
+
 # Core Dependencies
 numpy>=1.21.0,<1.24.0
 torch>=1.12.1,<2.0.0
@@ -6,9 +18,8 @@ stable-baselines3[extra]>=2.0.0  # [extra] includes pygame, ale-py, rich for PPO
 sb3-contrib>=2.0.0
 
 # Simulation
-# gym-pybullet-drones is installed via: pip install -e /path/to/gym-pybullet-drones
+# gym-pybullet-drones is installed via: pip install -e gym-pybullet-drones/
 # pybullet installed via: conda install -c conda-forge pybullet (for Apple Silicon)
-# mujoco>=2.3.0  # Optional, not needed for this project
 
 # Real Drone Interface
 djitellopy>=2.4.0

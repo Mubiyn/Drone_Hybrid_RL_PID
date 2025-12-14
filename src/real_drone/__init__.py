@@ -1,9 +1,8 @@
 """Real Drone Interface Package"""
 
-from src.real_drone.tello_interface import TelloInterface
-from src.real_drone.safe_deploy import SafeDeployer
+from src.real_drone.TelloWrapper import TelloWrapper
 
 __all__ = [
-    'TelloInterface',
-    'SafeDeployer',
+    'TelloWrapper',
 ]
+
