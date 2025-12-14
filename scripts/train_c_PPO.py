@@ -5,121 +5,112 @@ from stable_baselines3.common.env_util import DummyVecEnv
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, root)
 
-from src.envs.fly_env import QuadcopterEnv
-#from src.controllers.PPO import PPO
-from stable_baselines3.ppo import PPO
-
+from src.RL.envs.Drone_env import QuadcopterEnv
+from src.RL.models.PPO import PPO,PPOConfig
+import torch
 from stable_baselines3.common.callbacks import BaseCallback
 import matplotlib.pyplot as plt
 
 import numpy as np
 
-class LiveRewardPlot(BaseCallback):
-    def __init__(self, verbose=0, update_freq=1000):
-        super().__init__(verbose)
-        self.update_freq = update_freq
+
+class LivePlotter:
+    def __init__(self, theme="dark", smooth_window=20):
         plt.ion()
-        self.fig, self.ax = plt.subplots()
-        self.xs, self.rs = [], []
-        (self.line,) = self.ax.plot(self.xs, self.rs, 'b-')
-        self.ax.set_title("Rolling Mean Episode Reward")
-        self.ax.set_xlabel("Timesteps")
-        self.ax.set_ylabel("Episode Reward")
-        self.ax.grid(True)
-        self.recent_rewards = []
 
-    def _on_step(self) -> bool:
-        # Accumulate step rewards (only for env 0, for simplicity)
-        # But better: use env's info or monitor wrapper for *episode* rewards
-        # Here: fallback to step rewards if you must, but warn.
-        try:
-            # Get rewards — may be None or not in locals
-            rewards = self.locals.get("rewards")
-            if rewards is not None and len(rewards) > 0:
-                # Use first env's step reward (not ideal, but works for demo)
-                r = float(rewards[0])
-                self.recent_rewards.append(r)
-        except Exception as e:
-            if self.verbose:
-                print(f"Warning in callback: {e}")
+        # ----------- THEME -----------
+        if theme == "dark":
+            plt.style.use("dark_background")
+            bg = "#121212"
+            grid_color = "#444"
+        else:
+            plt.style.use("seaborn-v0_8")
+            bg = "white"
+            grid_color = "#DDD"
 
-        # Update plot every N steps
-        if self.n_calls % self.update_freq == 0 and self.recent_rewards:
-            # Use *mean* of recent rewards (~last 100 steps) for smoother plot
-            mean_r = np.mean(self.recent_rewards[-100:])
-            self.xs.append(self.num_timesteps)
-            self.rs.append(mean_r)
+        self.smooth_window = smooth_window
 
-            self.line.set_xdata(self.xs)
-            self.line.set_ydata(self.rs)
-            self.ax.relim()
-            self.ax.autoscale_view()
-            try:
-                self.fig.canvas.draw()
-                self.fig.canvas.flush_events()
-            except Exception:
-                plt.close(self.fig)
-                plt.ioff()
-                return False  # stop callback if plot fails
-        return True
+        self.fig, self.ax = plt.subplots(1, 2, figsize=(14, 5), dpi=120)
+        self.fig.patch.set_facecolor(bg)
 
-    def _on_training_end(self) -> None:
-        plt.ioff()
-        plt.close(self.fig)
+        self.rew_x, self.rew_raw, self.rew_smooth = [], [], []
+        (self.rew_line_raw,) = self.ax[0].plot([], [], color="#55aaff", alpha=0.3, label="Raw Reward")
+        (self.rew_line_smooth,) = self.ax[0].plot([], [], color="#00eaff", linewidth=2.5, label="Smoothed Reward")
 
+        self.ax[0].set_title("Mean Episodic Reward", fontsize=14)
+        self.ax[0].set_xlabel("Training Update", fontsize=12)
+        self.ax[0].set_ylabel("Reward", fontsize=12)
+        self.ax[0].grid(True, color=grid_color)
+        self.ax[0].legend(fontsize=10)
 
-def live_plot():
-    import matplotlib.pyplot as plt
-    plt.ion()
-    fig, ax = plt.subplots()
-    xs, rs = [], []
-    line, = ax.plot(xs, rs)
-    ax.set_title("Reward During Training")
-    ax.set_xlabel("Step")
-    ax.set_ylabel("Reward")
+        self.loss_x, self.pi_y, self.vf_y = [], [], []
+        (self.pi_line,) = self.ax[1].plot([], [], linewidth=2, color="#ff6f69", label="Policy Loss")
+        (self.vf_line,) = self.ax[1].plot([], [], linewidth=2, color="#ffcc5c", label="Value Loss")
 
-    def update(step, reward, loss):
-        xs.append(step)
-        rs.append(reward)
-        line.set_xdata(xs)
-        line.set_ydata(rs)
-        ax.relim()
-        ax.autoscale_view()
-        plt.pause(0.001)
+        self.ax[1].set_title("Loss Curves", fontsize=14)
+        self.ax[1].set_xlabel("Training Update", fontsize=12)
+        self.ax[1].set_ylabel("Loss", fontsize=12)
+        self.ax[1].grid(True, color=grid_color)
+        self.ax[1].legend(fontsize=10)
 
-    return update
+        plt.tight_layout()
+
+    
+    def smooth(self, data):
+        if len(data) < self.smooth_window:
+            return data
+        kernel = np.ones(self.smooth_window) / self.smooth_window
+        return np.convolve(data, kernel, mode='same')
+
+    #       CALLBACK UPDATE
+    def __call__(self, update_idx, pi_loss, vf_loss, entropy, mean_reward):
+
+        # REWARD PLOT 
+        self.rew_x.append(update_idx)
+        self.rew_raw.append(mean_reward)
+
+        smooth_vals = self.smooth(self.rew_raw)
+        self.rew_smooth = smooth_vals
+
+        self.rew_line_raw.set_data(self.rew_x, self.rew_raw)
+        self.rew_line_smooth.set_data(self.rew_x, smooth_vals)
+
+        self.ax[0].relim()
+        self.ax[0].autoscale_view()
+
+        #  LOSS PLOT 
+        self.loss_x.append(update_idx)
+        self.pi_y.append(pi_loss)
+        self.vf_y.append(vf_loss)
+
+        self.pi_line.set_data(self.loss_x, self.pi_y)
+        self.vf_line.set_data(self.loss_x, self.vf_y)
+
+        self.ax[1].relim()
+        self.ax[1].autoscale_view()
+
+        self.fig.canvas.draw()
+        self.fig.canvas.flush_events()
+        
+    def save(self, filename="training_plot"):
+            self.fig.savefig(f"results/{filename}.png", dpi=300, bbox_inches="tight")
+            self.fig.savefig(f"results/{filename}.svg", dpi=300, bbox_inches="tight")
+            print(f"[PLOT] Saved '{filename}.png' and '{filename}.svg'")
 
 def make_env(task,**kwargs):
     return QuadcopterEnv(task=task,**kwargs)
 
 if __name__ == "__main__":
 
-    #env = make_env(task="circle")
-    #env = make_env(task="circle", render_mode="none")
-
-    #env = DummyVecEnv([lambda: env])
-    env = DummyVecEnv([lambda: make_env("circle", render_mode="none") for _ in range(8)])
-    
-
-    model = PPO(
-        "MlpPolicy",
-        env,
-        verbose=1,
-        learning_rate=3e-4,
-        n_steps=4096,
-        batch_size=512,
-        n_epochs=20,
-        gamma=0.995,
-        gae_lambda=0.95,
-        clip_range=0.2,
-        ent_coef=0.0,
-        vf_coef=0.4,
-        max_grad_norm=0.8,
+    env = QuadcopterEnv(task="circle", render_mode="none")
+    cfg = PPOConfig(
+        total_timesteps=500_000,
     )
 
-    
-    plot_cb = LiveRewardPlot()
+    plotter = LivePlotter()
 
-    model.learn(total_timesteps=1_000_000, progress_bar=True, callback=plot_cb)
+    model = PPO(env=env, cfg=cfg, callback=plotter)
+    model.train()
 
-    model.save("models/circle_policy_new")
+    model.save("models/circle_model.zip")
+    plotter.save("training_plot")

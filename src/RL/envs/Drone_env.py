@@ -112,7 +112,7 @@ class QuadcopterEnv(BaseRLAviary):
         rel = wp - pos       # vector toward waypoint
 
 
-        target = pos + 0.5 * delta + 0.2 * rel
+        target = pos + 0.1 * delta + 0.15 * rel
 
         # smooth altitude toward waypoint z
         target[2] = 0.8 * target[2] + 0.2 * wp[2]
@@ -179,12 +179,12 @@ class QuadcopterEnv(BaseRLAviary):
             dist = np.linalg.norm(pos - target)
 
             reward = (
-                -2.0 * dist
+                -1.5 * dist
                 -0.3 * np.linalg.norm(vel)
                 -0.02 * (abs(rpy[0]) + abs(rpy[1]))
             )
 
-            if dist < 0.25:
+            if dist < 0.15:
                 self.hover_steps += 1
                 reward += 2.0
             else:
@@ -196,7 +196,7 @@ class QuadcopterEnv(BaseRLAviary):
                 self.prev_dist = np.linalg.norm(pos - self.waypoints[self.wp_idx])
 
             if pos[2] < 0.05:
-                reward -= 20.0
+                reward -= 5.0
 
             return reward
 
@@ -235,7 +235,7 @@ class QuadcopterEnv(BaseRLAviary):
         self.prev_dist = dist
 
         # 7) Waypoint reached
-        if dist < 0.25:
+        if dist < 0.15:
             reward += 15.0
             self.wp_idx += 1
 

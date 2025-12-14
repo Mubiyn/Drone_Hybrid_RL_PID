@@ -6,7 +6,8 @@ import pybullet as p
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, root)
 
-from stable_baselines3.ppo import PPO
+#from stable_baselines3.ppo import PPO
+from src.RL.models.PPO import PPO
 from stable_baselines3.common.env_util import DummyVecEnv
 from src.envs.focal_env import QuadcopterEnv
 
@@ -22,7 +23,7 @@ def test_task(model_path, task="circle", max_steps=5000):
     ])
 
     # Load model
-    model = PPO.load(model_path, env=env,verbose=1)
+    model = PPO.load(path=model_path)#, env=env,verbose=1)
 
     # Reset env
     obs = env.reset()
@@ -78,4 +79,4 @@ def test_task(model_path, task="circle", max_steps=5000):
     
 if __name__ == "__main__":
 
-    test_task("models/waypoints_policy.zip", task="four_points", max_steps=7000)
+    test_task("models/new_circle_policy", task="circle", max_steps=7000)

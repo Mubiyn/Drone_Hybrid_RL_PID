@@ -1,78 +1,85 @@
-import time
+import os, sys
 import numpy as np
 import matplotlib.pyplot as plt
-import sys, os
-
+import pybullet as p
+import time
 root = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.insert(0, root)
+import torch
 
-from stable_baselines3.ppo import PPO
-from stable_baselines3.common.env_util import DummyVecEnv
-from src.envs.general_env import QuadcopterEnv
+from src.RL.envs.Drone_env import QuadcopterEnv
+from src.RL.models.PPO import PPO, PPOConfig
 
 
-def test_task(model_path, task="circle", max_steps=5000):
+def test_model(model_path, task="circle", max_steps=5000, record_video=False):
 
-    print(f"[TEST] Loading model from: {model_path}")
-    print(f"[TEST] Selected task: {task}")
+    print(f"\n[TEST] Loading PPO model from: {model_path}")
 
-    # Create environment with ALL tasks (same obs shape as training)
-    env = DummyVecEnv([
-        lambda: QuadcopterEnv(mode="test", task=task, render_mode="human")#,custom_target=[0.0,0.5, 2.0])
-    ])
+    # --- create environment ---
+    env = QuadcopterEnv(task=task, render_mode="human")
+    obs, _ = env.reset()
 
-    # Load model
-    model = PPO.load(model_path, env=env)
+    # --- load model ---
+    cfg = PPOConfig(device="cuda" if torch.cuda.is_available() else "cpu")
+    model = PPO(env, cfg)
+    model.load(model_path)
 
-    # Force the selected task
-    env.envs[0].task = task
-    env.envs[0].waypoints = env.envs[0]._build_waypoints(task)
-    env.envs[0].wp_idx = 0
-    env.envs[0].phase = "hover"
-
-    # Reset environment
-    obs = env.reset()
+    print("[TEST] Model loaded successfully!")
 
     drone_path = []
-    ideal_path = np.array(env.envs[0].waypoints)
 
+    # --- Optional: record video ---
+    if record_video:
+        log_id = p.startStateLogging(
+            p.STATE_LOGGING_VIDEO_MP4,
+            f"{task}_test_flight.mp4"
+        )
+        print("[TEST] Recording video...")
+
+    # --- simulation loop ---
     for step in range(max_steps):
 
-        action, _ = model.predict(obs, deterministic=True)
-        obs, reward, done, info = env.step(action)
+        action = model.predict(obs)       # deterministic action
+        obs, reward, terminated, truncated, _ = env.step(action)
 
-        pos = env.envs[0]._getDroneStateVector(0)[0:3]
+        # track drone position
+        pos = env._getDroneStateVector(0)[0:3]
         drone_path.append(pos)
 
-        if done[0]:
+        if terminated or truncated:
             print(f"[TEST] Episode ended at step {step}")
             break
-
-        time.sleep(1/80)
+        
+        #time.sleep(1/80)
+    
+    if record_video:
+        p.stopStateLogging(log_id)
+        print(f"[TEST] Video saved as {task}_test_flight.mp4")
 
     drone_path = np.array(drone_path)
 
-    # 2D Plot
-    plt.figure(figsize=(7,7))
-    plt.plot(ideal_path[:,0], ideal_path[:,1], 'r--', label="Ideal path")
-    plt.plot(drone_path[:,0], drone_path[:,1], 'b-', label="Drone")
-    plt.scatter(ideal_path[:,0], ideal_path[:,1], c='red', s=20)
-    plt.axis("equal")
-    plt.grid(True)
+    # --- Plot XY Path ---
+    wp = np.array(env.waypoints)
+
+    plt.figure(figsize=(6,6))
+    plt.plot(wp[:,0], wp[:,1], 'r--', label="Waypoint Path")
+    plt.plot(drone_path[:,0], drone_path[:,1], 'b-', label="Drone Path")
+    plt.title(f"2D Path – {task}")
     plt.legend()
-    plt.title(f"2D XY Path – {task}")
+    plt.grid(True)
+    plt.axis("equal")
     plt.show()
 
-    # 3D Plot
-    fig = plt.figure(figsize=(8,6))
+    # --- Plot 3D Path ---
+    fig = plt.figure(figsize=(7,6))
     ax = fig.add_subplot(111, projection="3d")
-    ax.plot(ideal_path[:,0], ideal_path[:,1], ideal_path[:,2], 'r--')
+    ax.plot(wp[:,0], wp[:,1], wp[:,2], 'r--')
     ax.plot(drone_path[:,0], drone_path[:,1], drone_path[:,2], 'b-')
     ax.set_title(f"3D Trajectory – {task}")
     plt.show()
 
-    print("[TEST] Finished.")
+    print("\n[TEST] Finished testing.")
 
 
 if __name__ == "__main__":
-    test_task("models/multi_policy.zip", task="circle", max_steps=5000)
+    test_model("models/circle_model.zip", task="circle", max_steps=12000, record_video=True)
