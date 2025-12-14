@@ -1,13 +1,60 @@
 # Flight Videos
 
-This directory contains recorded videos of drone flights.
+This directory contains recorded videos of drone flights for both Phase 1 (simulation) and Phase 2 (real drone).
+
+## Directory Structure
+
+```
+videos/
+├── README.md              # This file
+├── pid/                   # PID controller videos (5 trajectories)
+│   ├── circle.mp4
+│   ├── figure8.mp4
+│   ├── hover.mp4
+│   ├── spiral.mp4
+│   └── waypoint.mp4
+└── hybrid/                # Hybrid RL-PID videos (5 trajectories)
+    ├── circle.mp4
+    ├── figure8.mp4
+    ├── hover.mp4
+    ├── spiral.mp4
+    └── waypoint.mp4
+```
+
+## Available Videos
+
+### Phase 1: Simulation Videos (10 videos)
+All simulation videos are 15 seconds, showing baseline (without domain randomization):
+
+**PID Controller:**
+- `pid/circle.mp4` - Circular trajectory tracking
+- `pid/figure8.mp4` - Figure-8 trajectory tracking
+- `pid/hover.mp4` - Hover in place
+- `pid/spiral.mp4` - Spiral trajectory tracking
+- `pid/waypoint.mp4` - Waypoint navigation
+
+**Hybrid RL-PID Controller:**
+- `hybrid/circle.mp4` - Circular trajectory tracking
+- `hybrid/figure8.mp4` - Figure-8 trajectory tracking
+- `hybrid/hover.mp4` - Hover in place
+- `hybrid/spiral.mp4` - Spiral trajectory tracking
+- `hybrid/waypoint.mp4` - Waypoint navigation
+
+### Phase 2: Real Drone Videos
+Real drone flight videos (DJI Tello) will be uploaded to Google Drive.
+See `docs/VIDEO_UPLOAD_GUIDE.md` for details.
+
+**Successful Trajectories:**
+- Hover (baseline + perturbation)
+- Spiral (baseline + perturbation)
 
 ## Video Format
 
 Videos are saved as MP4 files with H.264 encoding:
-- **Resolution:** 640x480 (simulation) or 720p (real drone)
-- **FPS:** 30
+- **Resolution:** 1024x768 (simulation)
+- **FPS:** 60 (simulation), 30 (real drone)
 - **Codec:** H.264
+- **Duration:** 15-20 seconds per video
 
 ## Recording During Evaluation
 
