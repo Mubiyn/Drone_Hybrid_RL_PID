@@ -371,4 +371,4 @@ This research successfully demonstrated:
 
 ### Video Demonstrations
 
-- Phase 2 real flight videos: *https://drive.google.com/file/d/1A-3saHSC-061H_XvPKcBVC0CZB35RkIP/view?usp=sharing*
+- Phase 2 real flight videos: *https://drive.google.com/drive/folders/1SYW4yN6jDDRTXFW3YVjBrWCday0e9ai-?usp=sharing*
