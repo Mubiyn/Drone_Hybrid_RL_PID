@@ -6,11 +6,6 @@ This directory contains helper scripts and utilities used during development and
 
 ### Shell Scripts
 
-**Data Collection**:
-- `autonomous_quickstart.sh` - Quick autonomous data collection
-- `collect_autonomous.sh` - Collect autonomous flight data
-- `collect_tello_data.sh` - Tello-specific data collection
-
 **Execution Helpers**:
 - `run_demo.sh` - Run demonstration flights
 - `run_evaluation.sh` - Run evaluation tests
