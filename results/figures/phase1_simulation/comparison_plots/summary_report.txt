@@ -1,0 +1,85 @@
+================================================================================
+PHASE 1: SIMULATION PERTURBATION TESTING - SUMMARY REPORT
+================================================================================
+
+Models tested: models/hybrid_robust/
+Episodes per test: 5
+Domain Randomization: Mass ±30%, Inertia ±30%, Wind 0.15N
+
+================================================================================
+DETAILED RESULTS BY TRAJECTORY
+================================================================================
+
+CIRCLE
+--------------------------------------------------------------------------------
+Controller           Condition       Tracking Error       Smoothness     
+--------------------------------------------------------------------------------
+PID                  Baseline        0.1470 ± 0.0046m    4189.66
+PID                  With DR         0.2962 ± 0.3130m    11182.32
+Hybrid               Baseline        0.1225 ± 0.0067m    0.00
+Hybrid               With DR         0.1472 ± 0.0291m    0.01
+
+Improvement (Baseline):  +16.7%
+Improvement (With DR):   +50.3%
+
+
+FIGURE8
+--------------------------------------------------------------------------------
+Controller           Condition       Tracking Error       Smoothness     
+--------------------------------------------------------------------------------
+PID                  Baseline        0.0794 ± 0.0008m    1369.99
+PID                  With DR         0.0867 ± 0.0043m    2686.02
+Hybrid               Baseline        0.0768 ± 0.0007m    0.00
+Hybrid               With DR         0.0808 ± 0.0065m    0.04
+
+Improvement (Baseline):  +3.3%
+Improvement (With DR):   +6.9%
+
+
+HOVER
+--------------------------------------------------------------------------------
+Controller           Condition       Tracking Error       Smoothness     
+--------------------------------------------------------------------------------
+PID                  Baseline        0.0421 ± 0.0000m    1470.61
+PID                  With DR         0.0625 ± 0.0097m    3093.35
+Hybrid               Baseline        0.0444 ± 0.0002m    0.00
+Hybrid               With DR         0.0491 ± 0.0015m    0.03
+
+Improvement (Baseline):  -5.4%
+Improvement (With DR):   +21.5%
+
+
+SPIRAL
+--------------------------------------------------------------------------------
+Controller           Condition       Tracking Error       Smoothness     
+--------------------------------------------------------------------------------
+PID                  Baseline        0.1480 ± 0.0049m    4102.18
+PID                  With DR         0.5153 ± 0.4795m    19248.48
+Hybrid               Baseline        0.1293 ± 0.0070m    0.00
+Hybrid               With DR         0.1355 ± 0.0099m    0.04
+
+Improvement (Baseline):  +12.6%
+Improvement (With DR):   +73.7%
+
+
+================================================================================
+OVERALL SUMMARY
+================================================================================
+
+Trajectory      Baseline Improvement      DR Improvement           
+--------------------------------------------------------------------------------
+Circle           +16.7%                    +50.3%
+Figure8           +3.3%                     +6.9%
+Hover             -5.4%                    +21.5%
+Spiral           +12.6%                    +73.7%
+--------------------------------------------------------------------------------
+AVERAGE           +6.8%                    +38.1%
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+✓ Hybrid controller shows 6.8% average improvement over PID baseline
+✓ With domain randomization, Hybrid shows 38.1% average improvement
+
+================================================================================

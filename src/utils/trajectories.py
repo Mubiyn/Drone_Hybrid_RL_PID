@@ -1,111 +1,178 @@
 import numpy as np
 
-
 class TrajectoryGenerator:
-    
-    @staticmethod
-    def hover(position, duration, freq):
-        num_steps = int(duration * freq)
-        return np.tile(position, (num_steps, 1))
-    
-    @staticmethod
-    def waypoints(points, duration_per_segment, freq):
-        trajectory = []
-        for i in range(len(points) - 1):
-            start = points[i]
-            end = points[i + 1]
-            steps = int(duration_per_segment * freq)
-            segment = np.linspace(start, end, steps)
-            trajectory.append(segment)
-        return np.vstack(trajectory)
-    
-    @staticmethod
-    def figure8(center, radius, height, period, freq, duration):
-        num_steps = int(duration * freq)
-        t = np.linspace(0, duration, num_steps)
+    """
+    Generates target trajectories for drone tracking tasks.
+    Supported types: 'hover', 'circle', 'figure8', 'spiral', 'waypoint', 'square'
+    """
+    def __init__(self, trajectory_type='hover', duration=10.0, radius=1.0, height=1.0):
+        self.trajectory_type = trajectory_type
+        self.duration = duration
+        self.radius = radius
+        self.height = height
+        self.center = np.array([0, 0, height])
         
-        x = center[0] + radius * np.sin(2 * np.pi * t / period)
-        y = center[1] + radius * np.sin(4 * np.pi * t / period) / 2
-        z = np.full_like(x, center[2] + height)
+        # Waypoints for 'waypoint' task
+        self.waypoints = np.array([
+            [0, 0, 1],
+            [1, 0, 1],
+            [1, 1, 1],
+            [0, 1, 1],
+            [0, 0, 1]
+        ])
+
+    def get_target(self, t):
+        """
+        Returns the target state at time t.
         
-        return np.column_stack([x, y, z])
-    
-    @staticmethod
-    def circle(center, radius, period, freq, duration):
-        num_steps = int(duration * freq)
-        t = np.linspace(0, duration, num_steps)
+        Args:
+            t (float): Current time in seconds.
+            
+        Returns:
+            pos (np.ndarray): Target position [x, y, z]
+            vel (np.ndarray): Target velocity [vx, vy, vz]
+            yaw (float): Target yaw angle
+        """
+        if self.trajectory_type == 'hover':
+            return self._hover(t)
+        elif self.trajectory_type == 'circle':
+            return self._circle(t)
+        elif self.trajectory_type == 'figure8':
+            return self._figure8(t)
+        elif self.trajectory_type == 'spiral':
+            return self._spiral(t)
+        elif self.trajectory_type == 'waypoint':
+            return self._waypoint(t)
+        elif self.trajectory_type == 'square':
+            return self._square(t)
+        else:
+            raise ValueError(f"Unknown trajectory type: {self.trajectory_type}")
+
+    def _hover(self, t):
+        pos = self.center
+        vel = np.zeros(3)
+        yaw = 0.0
+        return pos, vel, yaw
+
+    def _circle(self, t):
+        # Circular path in XY plane
+        omega = 2 * np.pi / self.duration  # Angular velocity
+        angle = omega * t
         
-        x = center[0] + radius * np.cos(2 * np.pi * t / period)
-        y = center[1] + radius * np.sin(2 * np.pi * t / period)
-        z = np.full_like(x, center[2])
+        x = self.radius * np.cos(angle)
+        y = self.radius * np.sin(angle)
+        z = self.height
         
-        return np.column_stack([x, y, z])
-    
-    @staticmethod
-    def emergency_landing(start_height, target_height, duration, freq):
-        num_steps = int(duration * freq)
-        z = np.linspace(start_height, target_height, num_steps)
-        x = np.zeros_like(z)
-        y = np.zeros_like(z)
-        return np.column_stack([x, y, z])
+        vx = -self.radius * omega * np.sin(angle)
+        vy = self.radius * omega * np.cos(angle)
+        vz = 0
+        
+        pos = np.array([x, y, z])
+        vel = np.array([vx, vy, vz])
+        yaw = angle # Face direction of motion? Or 0? Let's keep 0 for simplicity or tangent.
+        # For simple tracking, yaw=0 is easier. 
+        # If we want it to face forward: yaw = angle + np.pi/2
+        yaw = 0.0 
+        
+        return pos, vel, yaw
 
+    def _figure8(self, t):
+        # Lemniscate of Bernoulli or similar
+        omega = 2 * np.pi / self.duration
+        angle = omega * t
+        
+        x = self.radius * np.sin(angle)
+        y = self.radius * np.sin(angle) * np.cos(angle)
+        z = self.height
+        
+        # Derivatives
+        vx = self.radius * omega * np.cos(angle)
+        vy = self.radius * omega * (np.cos(angle)**2 - np.sin(angle)**2)
+        vz = 0
+        
+        pos = np.array([x, y, z])
+        vel = np.array([vx, vy, vz])
+        yaw = 0.0
+        return pos, vel, yaw
 
-TASK_TRAJECTORIES = {
-    'hover': {
-        'generator': TrajectoryGenerator.hover,
-        'params': {'position': [0, 0, 1.0], 'duration': 10, 'freq': 48}
-    },
-    'hover_extended': {
-        'generator': TrajectoryGenerator.hover,
-        'params': {'position': [0, 0, 1.0], 'duration': 30, 'freq': 48}
-    },
-    'waypoint_delivery': {
-        'generator': TrajectoryGenerator.waypoints,
-        'params': {
-            'points': [[0,0,1], [2,2,1.5], [4,0,1], [2,-2,1.5], [0,0,1]],
-            'duration_per_segment': 3,
-            'freq': 48
-        }
-    },
-    'figure8': {
-        'generator': TrajectoryGenerator.figure8,
-        'params': {
-            'center': [0, 0, 0],
-            'radius': 1.0,
-            'height': 1.0,
-            'period': 8,
-            'freq': 48,
-            'duration': 16
-        }
-    },
-    'circle': {
-        'generator': TrajectoryGenerator.circle,
-        'params': {
-            'center': [0, 0, 1],
-            'radius': 1.5,
-            'period': 10,
-            'freq': 48,
-            'duration': 30
-        }
-    },
-    'emergency_landing': {
-        'generator': TrajectoryGenerator.emergency_landing,
-        'params': {
-            'start_height': 2.0,
-            'target_height': 0.1,
-            'duration': 10,
-            'freq': 48
-        }
-    }
-}
+    def _spiral(self, t):
+        # Ascending spiral
+        omega = 2 * np.pi / self.duration
+        angle = omega * t
+        climb_rate = 0.1 # m/s
+        
+        x = self.radius * np.cos(angle)
+        y = self.radius * np.sin(angle)
+        z = self.height + climb_rate * t
+        
+        vx = -self.radius * omega * np.sin(angle)
+        vy = self.radius * omega * np.cos(angle)
+        vz = climb_rate
+        
+        pos = np.array([x, y, z])
+        vel = np.array([vx, vy, vz])
+        yaw = 0.0
+        return pos, vel, yaw
 
+    def _waypoint(self, t):
+        # Simple linear interpolation between waypoints
+        # This is a simplified version. 
+        # Assuming total duration is split equally among segments.
+        num_segments = len(self.waypoints) - 1
+        segment_duration = self.duration / num_segments
+        
+        segment_idx = int(t // segment_duration)
+        if segment_idx >= num_segments:
+            segment_idx = num_segments - 1
+            local_t = segment_duration
+        else:
+            local_t = t % segment_duration
+            
+        p_start = self.waypoints[segment_idx]
+        p_end = self.waypoints[segment_idx + 1]
+        
+        alpha = local_t / segment_duration
+        pos = (1 - alpha) * p_start + alpha * p_end
+        
+        vel = (p_end - p_start) / segment_duration
+        yaw = 0.0
+        
+        return pos, vel, yaw
 
-def get_trajectory(task_name):
-    if task_name not in TASK_TRAJECTORIES:
-        raise ValueError(f"Unknown task: {task_name}. Available: {list(TASK_TRAJECTORIES.keys())}")
-    
-    task = TASK_TRAJECTORIES[task_name]
-    return task['generator'](**task['params'])
-
-def get_available_tasks():
-    return list(TASK_TRAJECTORIES.keys())
+    def _square(self, t):
+        """Square path in XY plane"""
+        # Square with side length 2*radius, centered at origin
+        side_length = 2 * self.radius
+        perimeter = 4 * side_length
+        speed = perimeter / self.duration
+        
+        # Distance traveled
+        dist = (speed * t) % perimeter
+        
+        # Determine which side we're on
+        if dist < side_length:  # Bottom side (moving right)
+            x = -self.radius + dist
+            y = -self.radius
+            vx = speed
+            vy = 0
+        elif dist < 2 * side_length:  # Right side (moving up)
+            x = self.radius
+            y = -self.radius + (dist - side_length)
+            vx = 0
+            vy = speed
+        elif dist < 3 * side_length:  # Top side (moving left)
+            x = self.radius - (dist - 2 * side_length)
+            y = self.radius
+            vx = -speed
+            vy = 0
+        else:  # Left side (moving down)
+            x = -self.radius
+            y = self.radius - (dist - 3 * side_length)
+            vx = 0
+            vy = -speed
+        
+        pos = np.array([x, y, self.height])
+        vel = np.array([vx, vy, 0])
+        yaw = 0.0
+        
+        return pos, vel, yaw

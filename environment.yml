@@ -1,10 +1,20 @@
+# Drone Hybrid RL-PID Control - Conda Environment
+#
+# Installation:
+#   conda env create -f environment.yml
+#   conda activate drone-hybrid-rl
+#   cd gym-pybullet-drones && pip install -e .
+#
+# For GPU support:
+#   Remove 'cpuonly' line and add 'pytorch-cuda=11.7'
+
 name: drone-hybrid-rl
 channels:
   - conda-forge
   - pytorch
   - defaults
 dependencies:
-  - python=3.8
+  - python=3.10
   - pip>=22.0
   - numpy>=1.21.0,<1.24.0
   - scipy>=1.9.0
