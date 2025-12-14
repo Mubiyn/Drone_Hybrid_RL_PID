@@ -1,3 +1,6 @@
+# External dependencies (install separately)
+gym-pybullet-drones/
+
 # Python
 __pycache__/
 *.py[cod]
