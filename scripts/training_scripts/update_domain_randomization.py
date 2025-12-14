@@ -68,7 +68,7 @@ def main():
             print(f"✗ {filepath}: {e}")
     
     if not results:
-        print("\n❌ No valid flight data!")
+        print("\n No valid flight data!")
         return
     
     # Aggregate statistics

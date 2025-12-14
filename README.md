@@ -118,7 +118,7 @@ python scripts/train_robust.py \
 Drone_Hybrid_RL_PID/
 ├── README.md                          # This file
 ├── METHODOLOGY.md                     # Detailed methodology and approach
-├── RESULTS.md                         # Comprehensive results analysis ✅
+├── RESULTS.md                         # Comprehensive results analysis 
 ├── IMPLEMENTATION_PLAN.md             # Project management and task tracking
 │
 ├── requirements.txt                   # Python dependencies (pip)
@@ -290,11 +290,11 @@ Testing `logs/hybrid_tello_drone/*/rl_only_*/` on DJI Tello:
 
 | Trajectory | Status | Improvement over PID | Notes |
 |------------|--------|---------------------|-------|
-| Hover      | ✅ Success | **+20.2%** | Very stable, robust to wind |
-| Spiral     | ✅ Success | **+20.5%** | Good tracking, better perturbation rejection |
-| Circle     | ❌ Failed | N/A | Caused oscillations (too aggressive) |
-| Figure8    | ❌ Failed | N/A | Too fast for Tello hardware limits |
-| Square     | ❌ Failed | N/A | Sharp turns beyond capability |
+| Hover      |  Success | **+20.2%** | Very stable, robust to wind |
+| Spiral     |  Success | **+20.5%** | Good tracking, better perturbation rejection |
+| Circle     |  Failed | N/A | Caused oscillations (too aggressive) |
+| Figure8    |  Failed | N/A | Too fast for Tello hardware limits |
+| Square     |  Failed | N/A | Sharp turns beyond capability |
 
 **Key Insight**: Successful sim-to-real transfer with 20%+ improvements on compatible trajectories. See [RESULTS.md](RESULTS.md) for complete analysis.
 
@@ -302,22 +302,25 @@ Full results with plots and analysis: [RESULTS.md](RESULTS.md)
 
 ## Video Demonstrations
 
-### Phase 1: Simulation Videos
-All simulation videos are available locally in `results/videos/`:
+### Phase 1: Simulation Videos (with Domain Randomization)
 
-**PID Controller:**
-- `results/videos/pid/circle.mp4` - Circular trajectory tracking
-- `results/videos/pid/figure8.mp4` - Figure-8 trajectory tracking
-- `results/videos/pid/hover.mp4` - Hover in place
-- `results/videos/pid/spiral.mp4` - Spiral trajectory tracking
-- `results/videos/pid/waypoint.mp4` - Waypoint navigation
+All simulation videos demonstrate controllers operating under perturbations (wind ±0.15N, mass ±30%, inertia ±30%):
+
+**PID Controller Baseline:**
+- [Circle](results/videos/pid/circle.mp4) - PID tracking circular trajectory with perturbations
+- [Figure8](results/videos/pid/figure8.mp4) - PID tracking figure-8 trajectory with perturbations
+- [Hover](results/videos/pid/hover.mp4) - PID maintaining hover position with perturbations
+- [Spiral](results/videos/pid/spiral.mp4) - PID tracking spiral trajectory with perturbations
+- [Waypoint](results/videos/pid/waypoint.mp4) - PID waypoint navigation with perturbations
 
 **Hybrid RL-PID Controller:**
-- `results/videos/hybrid/circle.mp4` - Circular trajectory tracking
-- `results/videos/hybrid/figure8.mp4` - Figure-8 trajectory tracking
-- `results/videos/hybrid/hover.mp4` - Hover in place
-- `results/videos/hybrid/spiral.mp4` - Spiral trajectory tracking
-- `results/videos/hybrid/waypoint.mp4` - Waypoint navigation
+- [Circle](results/videos/hybrid/circle.mp4) - Hybrid tracking circular trajectory with perturbations
+- [Figure8](results/videos/hybrid/figure8.mp4) - Hybrid tracking figure-8 trajectory with perturbations
+- [Hover](results/videos/hybrid/hover.mp4) - Hybrid maintaining hover position with perturbations
+- [Spiral](results/videos/hybrid/spiral.mp4) - Hybrid tracking spiral trajectory with perturbations
+- [Waypoint](results/videos/hybrid/waypoint.mp4) - Hybrid waypoint navigation with perturbations
+
+**Visual Comparison:** Compare PID vs Hybrid performance across all 5 trajectories in [trajectory plots](results/phase1_simulation/trajectory_plots/)
 
 ### Phase 2: Real Drone Videos
 Real drone flight videos (DJI Tello) will be uploaded to Google Drive:
@@ -359,8 +362,8 @@ If you use this work in your research, please cite:
 ```bibtex
 @misc{drone_hybrid_rl_pid_2024,
   title={Hybrid RL-PID Control for Quadrotor Trajectory Tracking},
-  author={[Your Names]},
-  year={2024},
+  author={Bokono Bennett Nathan, Emanuel Israel Okpara, Adzembeh Joshua, Mubin Sheidu},
+  year={2025},
   howpublished={\url{https://github.com/Mubiyn/Drone_Hybrid_RL_PID}}
 }
 ```

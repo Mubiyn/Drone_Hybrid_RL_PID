@@ -20,19 +20,19 @@ This document provides a comprehensive overview of the methodology, design decis
 ### Motivation
 
 Traditional PID controllers are:
-- ✅ **Stable and predictable** for simple tasks
-- ✅ **Easy to understand** and tune
-- ❌ **Limited adaptability** to changing conditions
-- ❌ **Suboptimal** for complex, dynamic trajectories
-- ❌ **Require manual tuning** for each task
+-  **Stable and predictable** for simple tasks
+-  **Easy to understand** and tune
+-  **Limited adaptability** to changing conditions
+-  **Suboptimal** for complex, dynamic trajectories
+-  **Require manual tuning** for each task
 
 Reinforcement Learning offers:
-- ✅ **Learning from experience** to optimize performance
-- ✅ **Adaptation to perturbations**
-- ✅ **Automatic policy optimization**
-- ❌ **Sample inefficiency** (needs lots of data)
-- ❌ **Instability during learning**
-- ❌ **Sim-to-real transfer challenges**
+-  **Learning from experience** to optimize performance
+-  **Adaptation to perturbations**
+-  **Automatic policy optimization**
+-  **Sample inefficiency** (needs lots of data)
+-  **Instability during learning**
+-  **Sim-to-real transfer challenges**
 
 ### Our Solution: Hybrid RL-PID
 
@@ -175,9 +175,9 @@ domain_randomization:
 - Models saved to `models/hybrid_robust/`
 
 **Key Results**:
-- ✅ Hybrid outperforms PID on all dynamic trajectories
-- ✅ Strong robustness to domain randomization
-- ✅ +13% to +50% improvement depending on trajectory
+-  Hybrid outperforms PID on all dynamic trajectories
+-  Strong robustness to domain randomization
+-  +13% to +50% improvement depending on trajectory
 
 ### Phase 2: Real Hardware Deployment
 
@@ -213,9 +213,9 @@ domain_randomization:
 - Models saved to `logs/hybrid_tello_drone/*/rl_only_*/`
 
 **Key Results**:
-- ✅ Successful deployment on 3/5 trajectories
-- ✅ Improved tracking over PID baseline
-- ✅ Robust to wind disturbances
+-  Successful deployment on 3/5 trajectories
+-  Improved tracking over PID baseline
+-  Robust to wind disturbances
 - ⚠️ Hardware limits exclude some trajectories
 
 ---
@@ -369,26 +369,26 @@ model.learn(
 
 ### What Worked
 
-✅ **Hybrid architecture**: Combining PID stability with RL optimization
-✅ **Domain randomization**: Crucial for robustness
-✅ **Progressive deployment**: Sim validation before hardware
-✅ **VecNormalize**: Stabilized training significantly
-✅ **Trajectory-specific PID tuning**: Better baseline performance
+ **Hybrid architecture**: Combining PID stability with RL optimization
+ **Domain randomization**: Crucial for robustness
+ **Progressive deployment**: Sim validation before hardware
+ **VecNormalize**: Stabilized training significantly
+ **Trajectory-specific PID tuning**: Better baseline performance
 
 ### What Failed
 
-❌ **Behavioral Cloning + RL (BC+RL)**: 
+ **Behavioral Cloning + RL (BC+RL)**: 
 - Attempted to pretrain with expert demonstrations
 - RL failed to improve beyond BC baseline
 - Discarded in favor of pure RL-only approach
 - Deleted `bc_rl_*` training runs from repository
 
-❌ **Fixed PID gains**: 
+ **Fixed PID gains**: 
 - Initially used same gains for all trajectories
 - Poor performance on figure8 (too aggressive)
 - Solution: Trajectory-specific tuning
 
-❌ **Testing mismatches**:
+ **Testing mismatches**:
 - Initially tested Phase 1 models with Phase 2 configuration
 - Catastrophic -104% performance on figure8
 - Solution: Phase-specific test scripts
@@ -404,13 +404,13 @@ model.learn(
 - Abandoned for hybrid approach
 
 **Iteration 3**: Hybrid RL-PID (residual_scale=200)
-- ✅ Great simulation results
-- ❌ Oscillations on real Tello (circle trajectory)
+-  Great simulation results
+-  Oscillations on real Tello (circle trajectory)
 
 **Iteration 4**: Hybrid RL-PID (residual_scale=100, DR ±30%)
-- ✅ Stable on real hardware
-- ✅ Robust to perturbations
-- ✅ Final successful approach
+-  Stable on real hardware
+-  Robust to perturbations
+-  Final successful approach
 
 ---
 

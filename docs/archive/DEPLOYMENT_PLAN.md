@@ -1,13 +1,13 @@
 # CLEAR PATH FORWARD: Real Drone Deployment
 
 ## Current Status
-- ✅ Hybrid model trained in simulation with domain randomization
-- ✅ Real Tello + MoCap setup working
-- ✅ Manual flight data collected
-- ❌ **Hybrid tested on real Tello → FAILED** (deployed final_model.zip instead of best_model.zip)
-- ❌ **Training bug discovered**: No `EvalCallback` → only saved `final_model.zip`, not `best_model.zip`
-- ❌ **Domain randomization gap**: Sim 27g ± 30%, Real 80g (OUTSIDE range)
-- ❌ PID not tuned for real Tello (using guessed kp=0.4, max_vel=0.5)
+-  Hybrid model trained in simulation with domain randomization
+-  Real Tello + MoCap setup working
+-  Manual flight data collected
+-  **Hybrid tested on real Tello → FAILED** (deployed final_model.zip instead of best_model.zip)
+-  **Training bug discovered**: No `EvalCallback` → only saved `final_model.zip`, not `best_model.zip`
+-  **Domain randomization gap**: Sim 27g ± 30%, Real 80g (OUTSIDE range)
+-  PID not tuned for real Tello (using guessed kp=0.4, max_vel=0.5)
 
 ## Root Causes of Failure
 1. **Wrong model deployed**: `final_model.zip` (last checkpoint) instead of `best_model.zip` (best performing)
@@ -25,8 +25,8 @@
 - **Drift observed**: Heavier drone behaves differently than bare 80g Tello
 - **Implication**: Flight data collected WITH markers = training data for actual deployment
 
-✅ **This is GOOD**: No sim-to-real gap for MoCap-equipped flights  
-❌ **But**: If markers removed later, model won't transfer to bare Tello
+ **This is GOOD**: No sim-to-real gap for MoCap-equipped flights  
+ **But**: If markers removed later, model won't transfer to bare Tello
 
 **Recommendation**: Keep markers on Tello permanently OR collect separate data for bare Tello
 
@@ -38,7 +38,7 @@
 Current training saves only `final_model.zip` without validation → deployed wrong checkpoint
 
 ### What Was Fixed
-✅ Added `EvalCallback` to `train_robust.py`:
+ Added `EvalCallback` to `train_robust.py`:
 - Evaluates model every 10k steps on validation env
 - Saves `best_model.zip` based on highest reward
 - Prevents deploying undertrained/overtrained models
@@ -53,7 +53,7 @@ Current training saves only `final_model.zip` without validation → deployed wr
 
 ---
 
-## Phase 1: PID Baseline ✅ COMPLETED
+## Phase 1: PID Baseline  COMPLETED
 
 ### Results
 **Auto-tuning completed** (13/20 tests, battery limited):
@@ -68,7 +68,7 @@ Best: kp=0.7, max_vel=0.7 → Mean error: 0.323m
 
 ### Steps
 
-**1.1 Auto-tune PID** ✅ DONE
+**1.1 Auto-tune PID**  DONE
 ```bash
 python scripts/autonomous_data_collection.py --tune-pid --mocap
 ```
@@ -88,7 +88,7 @@ See if domain randomization was sufficient for transfer
 ## Phase 2: ~~Test Sim-Trained Hybrid~~ (SKIP - Already Failed)
 
 ### Status
-❌ **User already tested sim-trained hybrid → FAILED**
+ **User already tested sim-trained hybrid → FAILED**
 
 ### Why It Failed
 1. Deployed `final_model.zip` instead of `best_model.zip` (training bug)
@@ -118,8 +118,8 @@ python scripts/autonomous_data_collection.py --trajectory spiral --kp 0.6 --max-
 Sim-trained model failed on real Tello → must adapt to real dynamics (85-95g with markers)
 
 ### Prerequisites
-✅ Phase 1 complete (PID tuned: kp=0.7, max_vel=0.7)
-✅ `train_robust.py` fixed with `EvalCallback`
+ Phase 1 complete (PID tuned: kp=0.7, max_vel=0.7)
+ `train_robust.py` fixed with `EvalCallback`
 
 ### Steps
 
@@ -150,7 +150,7 @@ python scripts/autonomous_data_collection.py --trajectory hover --kp 0.7 --max-v
 Demonstrate fine-tuned hybrid outperforms PID baseline on real tasks
 
 ### Prerequisites
-✅ Phase 3A complete (fine-tuned model tested, better than PID)
+ Phase 3A complete (fine-tuned model tested, better than PID)
 
 ### Steps
 
@@ -248,20 +248,20 @@ python scripts/analyze_final_results.py results/final_evaluation.json
 **Test**: Deploy sim-trained hybrid directly on real Tello
 
 **Outcomes**:
-1. **Hybrid ≥ PID**: Domain randomization SUCCESS ✅
+1. **Hybrid ≥ PID**: Domain randomization SUCCESS 
 2. **Hybrid < PID, but stable**: Need fine-tuning (expected) ⚠️
-3. **Hybrid unstable**: Reality gap too large, need re-training ❌
+3. **Hybrid unstable**: Reality gap too large, need re-training 
 
 ---
 
 ## Key Files Needed
 
 Create these scripts:
-1. ✅ `autonomous_data_collection.py` - PID auto-tuning and data collection
-2. ❌ `test_real_task.py` - Evaluate controller on specific task
-3. ❌ `compare_results.py` - Statistical comparison of controllers
-4. ❌ `finetune_bc.py` - Behavioral cloning fine-tuning
-5. ❌ `finetune_offline_rl.py` - Offline RL fine-tuning (optional)
+1.  `autonomous_data_collection.py` - PID auto-tuning and data collection
+2.  `test_real_task.py` - Evaluate controller on specific task
+3.  `compare_results.py` - Statistical comparison of controllers
+4.  `finetune_bc.py` - Behavioral cloning fine-tuning
+5.  `finetune_offline_rl.py` - Offline RL fine-tuning (optional)
 
 ---
 

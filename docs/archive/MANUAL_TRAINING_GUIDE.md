@@ -5,7 +5,7 @@ Train PID and Hybrid controllers to autonomously imitate your manual flight data
 
 ## Workflow Steps
 
-### ✅ Step 1: Manual Data Collection (COMPLETED)
+###  Step 1: Manual Data Collection (COMPLETED)
 You've already collected 4 flight recordings:
 - `flight_20251212_191949_hover.pkl` (1529 samples, 82s)
 - `flight_20251212_193328_circle.pkl` (1366 samples, 73s)
@@ -196,9 +196,9 @@ python src/real_drone/run_tello.py \
 - Diverse maneuvers (turns, altitude changes)
 
 **Your data:**
-- ✅ 4088 samples - GOOD
-- ✅ 3 trajectory types - GOOD
-- ✅ Multiple recordings - GOOD
+-  4088 samples - GOOD
+-  3 trajectory types - GOOD
+-  Multiple recordings - GOOD
 
 You have enough data to train both PID and BC successfully!
 

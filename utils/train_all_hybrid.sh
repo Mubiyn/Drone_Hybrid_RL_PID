@@ -23,7 +23,7 @@ NUM_ENVS=4
 
 # Check if data directory exists
 if [ ! -d "$DATA_DIR" ]; then
-    echo "❌ Data directory not found: $DATA_DIR"
+    echo " Data directory not found: $DATA_DIR"
     exit 1
 fi
 

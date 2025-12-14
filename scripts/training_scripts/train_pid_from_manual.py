@@ -209,7 +209,7 @@ def main():
     
     pkl_file = Path(args.data)
     if not pkl_file.exists():
-        print(f"❌ File not found: {pkl_file}")
+        print(f" File not found: {pkl_file}")
         return
     
     print(f"\n{'='*60}")

@@ -195,7 +195,7 @@ def main():
         args.num_envs = 1
     
     if not Path(args.trajectory_file).exists():
-        print(f"❌ Trajectory file not found: {args.trajectory_file}")
+        print(f" Trajectory file not found: {args.trajectory_file}")
         return
     
     train_hybrid(args)

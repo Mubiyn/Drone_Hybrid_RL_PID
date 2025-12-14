@@ -287,18 +287,18 @@ def main():
     
     # Validate
     if not Path(args.trajectory_file).exists():
-        print(f"❌ Trajectory file not found: {args.trajectory_file}")
+        print(f" Trajectory file not found: {args.trajectory_file}")
         return
     
     if args.controller in ['hybrid', 'both']:
         if args.model is None:
-            print("❌ --model required for hybrid controller")
+            print(" --model required for hybrid controller")
             return
         if not Path(args.model).exists():
             if Path(args.model + '.zip').exists():
                 args.model = args.model + '.zip'
             else:
-                print(f"❌ Model not found: {args.model}")
+                print(f" Model not found: {args.model}")
                 return
     
     # Connect to Tello

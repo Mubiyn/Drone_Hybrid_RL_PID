@@ -144,7 +144,7 @@ python scripts/evaluate_task.py --task aggressive-turn --controller hybrid
 ## Implementation Priority
 
 ### Phase 1: Basic Control (Now)
-1. ✅ Tune PID on real Tello
+1.  Tune PID on real Tello
 2. ⏳ Collect autonomous trajectory data
 3. ⏳ Fine-tune hybrid model
 

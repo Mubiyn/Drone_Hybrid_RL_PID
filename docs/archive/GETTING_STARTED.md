@@ -613,10 +613,10 @@ python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
 5. Verify installation (python scripts/test_installation.py)
 
 **Common Mistakes to Avoid:**
-- ❌ Installing pybullet with pip on Apple Silicon (will fail to compile)
-- ❌ Using base conda environment instead of drone-rl-pid
-- ❌ Installing gym-pybullet-drones before pybullet
-- ❌ Looking for gym-pybullet-drones in wrong directory (it's inside project folder)
+-  Installing pybullet with pip on Apple Silicon (will fail to compile)
+-  Using base conda environment instead of drone-rl-pid
+-  Installing gym-pybullet-drones before pybullet
+-  Looking for gym-pybullet-drones in wrong directory (it's inside project folder)
 
 ---
 

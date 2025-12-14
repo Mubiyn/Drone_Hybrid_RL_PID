@@ -240,7 +240,7 @@ def main():
         files = list(Path('data/tello_flights').glob('autonomous_*.pkl'))
     
     if not files:
-        print("❌ No flight data files found!")
+        print(" No flight data files found!")
         print("   Run autonomous data collection first:")
         print("   ./collect_autonomous.sh")
         return
@@ -264,7 +264,7 @@ def main():
             print(f"   ✗ {filepath.name}: {e}")
     
     if not results:
-        print("\n❌ No valid flight data to analyze!")
+        print("\n No valid flight data to analyze!")
         return
     
     print(f"\n✓ Analyzed {len(results)} flights")

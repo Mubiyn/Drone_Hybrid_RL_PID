@@ -105,7 +105,7 @@ print(f'  → 12 dimensions: [x,y,z, roll,pitch,yaw, vx,vy,vz, wx,wy,wz]')
 print(f'Actions shape: {actions.shape}')
 print(f'  → 4 dimensions: [forward, lateral, vertical, yaw]')
 
-print('\n✅ IS THIS DATA USEFUL?')
+print('\n IS THIS DATA USEFUL?')
 print('-'*70)
 print('YES! This data contains:')
 print('  ✓ Ground truth position from MoCap (±1mm accuracy)')

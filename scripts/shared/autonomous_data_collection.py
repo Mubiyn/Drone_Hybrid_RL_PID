@@ -763,7 +763,7 @@ def tune_pid_gains(args):
     print("="*60)
     
     if not results:
-        print("❌ No successful tests completed!")
+        print(" No successful tests completed!")
         return
     
     print(f"{'kp':>6} {'max_vel':>8} {'Mean Error':>12} {'Std Error':>12} {'Max Error':>12}")

@@ -172,13 +172,13 @@ def main():
     trajectory_file = f"data/expert_trajectories/perfect_{args.trajectory}_trajectory.pkl"
     
     if not os.path.exists(trajectory_file):
-        print(f"❌ Trajectory file not found: {trajectory_file}")
+        print(f" Trajectory file not found: {trajectory_file}")
         return
     
     # Train with RL
     model = train_with_rl(trajectory_file, args)
     
-    print("\n✅ TRAINING COMPLETE!")
+    print("\n TRAINING COMPLETE!")
     print("   The Hybrid controller was trained purely with RL.")
     print("   The PID baseline provides initial behavior,")
     print("   RL learned residual corrections to improve tracking.\n")

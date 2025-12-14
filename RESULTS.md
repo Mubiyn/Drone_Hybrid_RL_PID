@@ -118,9 +118,9 @@ Results with plots available in:
 Only **hover** and **spiral** were successfully deployed on Tello hardware.
 
 **Failed Trajectories**:
-- ❌ **Circle**: Caused oscillations due to aggressive maneuvers
-- ❌ **Figure8**: Too fast for Tello's control authority
-- ❌ **Square**: Sharp turns beyond hardware capabilities
+-  **Circle**: Caused oscillations due to aggressive maneuvers
+-  **Figure8**: Too fast for Tello's control authority
+-  **Square**: Sharp turns beyond hardware capabilities
 
 ### Hover - Wind Perturbation Tests
 
@@ -130,7 +130,7 @@ Only **hover** and **spiral** were successfully deployed on Tello hardware.
 |--------|-----|-----------|-------------|
 | Mean Position Error | 0.089m | 0.071m | **+20.2%** |
 | Max Position Error | 0.245m | 0.198m | **+19.2%** |
-| Trajectory Completion | ✅ 100% | ✅ 100% | — |
+| Trajectory Completion |  100% |  100% | — |
 | Battery Usage | 18% | 19% | -1% (negligible) |
 | Flight Time | ~120s | ~120s | Same |
 
@@ -153,7 +153,7 @@ Only **hover** and **spiral** were successfully deployed on Tello hardware.
 |--------|-----|-----------|-------------|
 | Mean Position Error | 0.156m | 0.124m | **+20.5%** |
 | Max Position Error | 0.421m | 0.338m | **+19.7%** |
-| Trajectory Completion | ✅ 100% | ✅ 100% | — |
+| Trajectory Completion |  100% |  100% | — |
 | Battery Usage | 22% | 23% | -1% (negligible) |
 | Flight Time | ~140s | ~140s | Same |
 
@@ -173,10 +173,10 @@ Only **hover** and **spiral** were successfully deployed on Tello hardware.
 **Test**: Pure autonomous execution without perturbations
 
 Results for hover and spiral show:
-- ✅ Successful trajectory following
-- ✅ Stable flight throughout
-- ✅ Safe landing after completion
-- ✅ Repeatable performance
+-  Successful trajectory following
+-  Stable flight throughout
+-  Safe landing after completion
+-  Repeatable performance
 
 **Additional Analysis Plots**:
 - `results/phase2_real_drone/autonomous_analysis/hover_analysis.png`
@@ -221,11 +221,11 @@ Results for hover and spiral show:
 
 ### Sim-to-Real Transfer Success
 
-✅ **Hover**: Simulation improvements transferred successfully  
-✅ **Spiral**: Simulation improvements transferred successfully  
-❌ **Circle**: Did not transfer (hardware limitations)  
-❌ **Figure8**: Did not attempt (simulation showed would fail)  
-❌ **Square**: Did not attempt (known hardware limits)
+ **Hover**: Simulation improvements transferred successfully  
+ **Spiral**: Simulation improvements transferred successfully  
+ **Circle**: Did not transfer (hardware limitations)  
+ **Figure8**: Did not attempt (simulation showed would fail)  
+ **Square**: Did not attempt (known hardware limits)
 
 **Transfer Success Rate**: 100% for trajectories within hardware capabilities
 
@@ -309,11 +309,11 @@ All real Tello flights showed:
 
 This research successfully demonstrated:
 
-1. ✅ **Hybrid RL-PID outperforms pure PID** on dynamic trajectories (16-74% improvement)
-2. ✅ **Domain randomization enables robust policies** (3-15× better under perturbations)
-3. ✅ **Sim-to-real transfer is viable** with proper configuration (100% success on compatible trajectories)
-4. ✅ **Real hardware validation** on DJI Tello (20%+ improvements on hover and spiral)
-5. ✅ **Practical deployment** is safe, reliable, and repeatable
+1.  **Hybrid RL-PID outperforms pure PID** on dynamic trajectories (16-74% improvement)
+2.  **Domain randomization enables robust policies** (3-15× better under perturbations)
+3.  **Sim-to-real transfer is viable** with proper configuration (100% success on compatible trajectories)
+4.  **Real hardware validation** on DJI Tello (20%+ improvements on hover and spiral)
+5.  **Practical deployment** is safe, reliable, and repeatable
 
 **Limitations**:
 - Hardware constraints limited trajectory complexity

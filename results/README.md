@@ -64,15 +64,15 @@ The configuration parameters changed between phases for good reasons:
 ## Results Summary
 
 ### Phase 1 (Simulation)
-- ✅ Hybrid outperforms PID on dynamic trajectories
-- ✅ Strong robustness to domain randomization
-- ✅ All 5 trajectories successful in simulation
+-  Hybrid outperforms PID on dynamic trajectories
+-  Strong robustness to domain randomization
+-  All 5 trajectories successful in simulation
 
 ### Phase 2 (Real Drone)
-- ✅ Successful deployment on circle, hover, spiral
+-  Successful deployment on circle, hover, spiral
 - ⚠️ Figure8 and square too aggressive for Tello hardware
-- ✅ Improved tracking over PID baseline
-- ✅ Robust to wind disturbances
+-  Improved tracking over PID baseline
+-  Robust to wind disturbances
 
 ## Accessing Results
 

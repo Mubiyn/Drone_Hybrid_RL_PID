@@ -289,11 +289,11 @@ def main():
     try:
         trajectories = load_autonomous_flight_data(args.data_dir, args.trajectory_type)
     except ValueError as e:
-        print(f"❌ {e}")
+        print(f" {e}")
         return
     
     if not trajectories:
-        print("❌ No valid trajectories found!")
+        print(" No valid trajectories found!")
         return
     
     # Step 2: Pre-train with Behavioral Cloning
@@ -314,7 +314,7 @@ def main():
     # Step 3: Fine-tune with RL
     model = finetune_with_rl(bc_policy, args.trajectory_file, args)
     
-    print("\n✅ COMPLETE! Your autonomous flight data has been used to:")
+    print("\n COMPLETE! Your autonomous flight data has been used to:")
     print("   1. Pre-train policy with Behavioral Cloning")
     print("   2. Fine-tune with RL under domain randomization")
     print("\n   This is the correct workflow! 🎉\n")

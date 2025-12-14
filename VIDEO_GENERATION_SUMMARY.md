@@ -1,7 +1,7 @@
 # Video Generation Summary
 
 **Date:** December 14, 2025  
-**Status:** ✅ Complete
+**Status:**  Complete
 
 ---
 
@@ -11,18 +11,18 @@
 All 10 simulation videos successfully generated:
 
 #### PID Controller (5 videos)
-- ✅ `results/videos/pid/circle.mp4` (660 KB)
-- ✅ `results/videos/pid/figure8.mp4` (656 KB)
-- ✅ `results/videos/pid/hover.mp4` (553 KB)
-- ✅ `results/videos/pid/spiral.mp4` (656 KB)
-- ✅ `results/videos/pid/waypoint.mp4` (614 KB)
+-  `results/videos/pid/circle.mp4` (660 KB)
+-  `results/videos/pid/figure8.mp4` (656 KB)
+-  `results/videos/pid/hover.mp4` (553 KB)
+-  `results/videos/pid/spiral.mp4` (656 KB)
+-  `results/videos/pid/waypoint.mp4` (614 KB)
 
 #### Hybrid RL-PID Controller (5 videos)
-- ✅ `results/videos/hybrid/circle.mp4` (659 KB)
-- ✅ `results/videos/hybrid/figure8.mp4` (655 KB)
-- ✅ `results/videos/hybrid/hover.mp4` (555 KB)
-- ✅ `results/videos/hybrid/spiral.mp4` (656 KB)
-- ✅ `results/videos/hybrid/waypoint.mp4` (616 KB)
+-  `results/videos/hybrid/circle.mp4` (659 KB)
+-  `results/videos/hybrid/figure8.mp4` (655 KB)
+-  `results/videos/hybrid/hover.mp4` (555 KB)
+-  `results/videos/hybrid/spiral.mp4` (656 KB)
+-  `results/videos/hybrid/waypoint.mp4` (616 KB)
 
 **Total Size:** ~6.3 MB
 
@@ -52,7 +52,7 @@ Real drone videos are stored separately and will be uploaded to Google Drive:
 ## Next Steps
 
 ### For Simulation Videos
-✅ Videos generated and saved locally  
+ Videos generated and saved locally  
 ⏳ Can be embedded directly in documentation or uploaded to Google Drive
 
 ### For Real Drone Videos

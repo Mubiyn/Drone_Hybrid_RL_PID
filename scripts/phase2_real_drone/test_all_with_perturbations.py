@@ -468,20 +468,20 @@ def main():
         model_dir = Path(f"logs/hybrid/{args.trajectory}")
         model_dirs = sorted(model_dir.glob("rl_only_*"))
         if not model_dirs:
-            print(f"❌ No trained models found for {args.trajectory}")
+            print(f" No trained models found for {args.trajectory}")
             return
         
         latest_model_dir = model_dirs[-1]
         model_path = latest_model_dir / "final_model.zip"
         
         if not model_path.exists():
-            print(f"❌ Model not found: {model_path}")
+            print(f" Model not found: {model_path}")
             return
         
         input(f"\nReady to test Hybrid with {args.perturbation}? Press Enter...")
         test_hybrid_controller(tello, str(model_path), trajectory_file, args.trajectory, args.duration, args.perturbation)
     
-    print("\n✅ Testing complete!\n")
+    print("\n Testing complete!\n")
 
 
 if __name__ == '__main__':

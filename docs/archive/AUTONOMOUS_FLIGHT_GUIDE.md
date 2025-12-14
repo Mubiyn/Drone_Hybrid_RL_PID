@@ -334,8 +334,8 @@ policy.fine_tune(offline_dataset=tello_flights)
 
 This autonomous flight system solves your two problems:
 
-1. ✅ **Complex Trajectories**: PID flies perfect circles/figure-8s (impossible manually)
-2. ✅ **PID Tuning**: Automated grid search finds optimal gains for real Tello
+1.  **Complex Trajectories**: PID flies perfect circles/figure-8s (impossible manually)
+2.  **PID Tuning**: Automated grid search finds optimal gains for real Tello
 
 The collected data will be **much higher quality** than manual control:
 - Smooth, continuous actions (not discrete keyboard)

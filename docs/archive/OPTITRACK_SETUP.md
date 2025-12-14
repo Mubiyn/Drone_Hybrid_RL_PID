@@ -213,22 +213,22 @@ Position: [ 0.523, -0.234,  0.056] m  Yaw:  45.3°  Vel: [ 0.00,  0.01,  0.00] m
 
 ### 2. Common Test Results
 
-**✅ Success** - You see:
+** Success** - You see:
 - Rigid body detected
 - Position updates smoothly as you move Tello
 - Yaw angle changes when you rotate Tello
 - "✓ TRACKED" indicator
 
-**❌ No rigid bodies detected**:
+** No rigid bodies detected**:
 - Check Motive is streaming (see Data Streaming pane)
 - Verify "Broadcast Frame Data" is enabled
 - Check firewall allows UDP 1511
 
-**❌ Wrong rigid body ID**:
+** Wrong rigid body ID**:
 - Note the detected IDs from test output
 - Use `--id X` flag with correct ID
 
-**❌ Position not updating**:
+** Position not updating**:
 - Rigid body might be occluded (not enough markers visible)
 - Move to area with better camera coverage
 

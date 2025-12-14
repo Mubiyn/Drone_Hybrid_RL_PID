@@ -126,11 +126,11 @@ def main():
         if Path(args.model + '.zip').exists():
             args.model = args.model + '.zip'
         else:
-            print(f"❌ Model not found: {args.model}")
+            print(f" Model not found: {args.model}")
             return
     
     if not Path(args.trajectory_file).exists():
-        print(f"❌ Trajectory file not found: {args.trajectory_file}")
+        print(f" Trajectory file not found: {args.trajectory_file}")
         return
     
     test_hybrid_model(

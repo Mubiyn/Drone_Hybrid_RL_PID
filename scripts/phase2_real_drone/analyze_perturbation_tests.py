@@ -432,7 +432,7 @@ def main():
         generate_summary_report(all_results, output_dir)
     
     print("\n" + "="*60)
-    print("✅ ANALYSIS COMPLETE")
+    print(" ANALYSIS COMPLETE")
     print(f"Results saved to: {output_dir}")
     print("="*60 + "\n")
 
