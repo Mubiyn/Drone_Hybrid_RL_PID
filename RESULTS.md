@@ -22,13 +22,13 @@ This document presents comprehensive experimental results from both simulation (
 
 ### Performance Summary
 
-| Trajectory | PID Baseline Error (m) | Hybrid Baseline Error (m) | **Improvement** | PID + DR Error (m) | Hybrid + DR Error (m) | **DR Improvement** |
-|------------|------------------------|---------------------------|-----------------|--------------------|-----------------------|--------------------|
-| **Circle** | 0.1470 | 0.1225 | **+16.7%** | 0.2962 | 0.1472 | **+50.3%** |
-| **Figure8** | 0.0794 | 0.0768 | **+3.3%** | 0.0867 | 0.0808 | **+6.8%** |
-| **Hover** | 0.0421 | 0.0444 | **-5.4%** | 0.0625 | 0.0491 | **+21.5%** |
-| **Spiral** | 0.1480 | 0.1293 | **+12.6%** | 0.5153 | 0.1355 | **+73.7%** |
-| **Waypoint** | *Not tested* | *Not tested* | — | *Not tested* | *Not tested* | — |
+| Trajectory   | PID Baseline Error (m) | Hybrid Baseline Error (m) | **Improvement** | PID + DR Error (m) | Hybrid + DR Error (m) | **DR Improvement** |
+| ------------ | ---------------------- | ------------------------- | --------------- | ------------------ | --------------------- | ------------------ |
+| **Circle**   | 0.1470                 | 0.1225                    | **+16.7%**      | 0.2962             | 0.1472                | **+50.3%**         |
+| **Figure8**  | 0.0794                 | 0.0768                    | **+3.3%**       | 0.0867             | 0.0808                | **+6.8%**          |
+| **Hover**    | 0.0421                 | 0.0444                    | **-5.4%**       | 0.0625             | 0.0491                | **+21.5%**         |
+| **Spiral**   | 0.1480                 | 0.1293                    | **+12.6%**      | 0.5153             | 0.1355                | **+73.7%**         |
+| **Waypoint** | _Not tested_           | _Not tested_              | —               | _Not tested_       | _Not tested_          | —                  |
 
 **Note**: Positive improvement means lower tracking error (better performance).
 
@@ -37,12 +37,14 @@ This document presents comprehensive experimental results from both simulation (
 #### Circle Trajectory
 
 **Baseline (No DR)**:
+
 - PID: 0.147m ± 0.005m tracking error
 - Hybrid: 0.122m ± 0.007m tracking error
 - **Improvement: 16.7%**
 - Control smoothness: Hybrid 4190× smoother
 
 **With Domain Randomization**:
+
 - PID: 0.296m ± 0.313m tracking error (highly variable)
 - Hybrid: 0.147m ± 0.029m tracking error
 - **Improvement: 50.3%**
@@ -51,12 +53,14 @@ This document presents comprehensive experimental results from both simulation (
 #### Figure8 Trajectory
 
 **Baseline (No DR)**:
+
 - PID: 0.079m ± 0.001m tracking error
 - Hybrid: 0.077m ± 0.001m tracking error
 - **Improvement: 3.3%**
 - Already excellent PID performance (well-tuned)
 
 **With Domain Randomization**:
+
 - PID: 0.087m ± 0.004m tracking error
 - Hybrid: 0.081m ± 0.006m tracking error
 - **Improvement: 6.8%**
@@ -65,12 +69,14 @@ This document presents comprehensive experimental results from both simulation (
 #### Hover Trajectory
 
 **Baseline (No DR)**:
+
 - PID: 0.042m ± 0.000m tracking error
 - Hybrid: 0.044m ± 0.000m tracking error
 - **Improvement: -5.4%** (PID slightly better)
 - Stationary task favors pure PID
 
 **With Domain Randomization**:
+
 - PID: 0.063m ± 0.010m tracking error
 - Hybrid: 0.049m ± 0.002m tracking error
 - **Improvement: 21.5%**
@@ -79,11 +85,13 @@ This document presents comprehensive experimental results from both simulation (
 #### Spiral Trajectory
 
 **Baseline (No DR)**:
+
 - PID: 0.148m ± 0.005m tracking error
 - Hybrid: 0.129m ± 0.007m tracking error
 - **Improvement: 12.6%**
 
 **With Domain Randomization**:
+
 - PID: 0.515m ± 0.480m tracking error (severe degradation)
 - Hybrid: 0.136m ± 0.010m tracking error
 - **Improvement: 73.7%** (dramatic!)
@@ -92,6 +100,7 @@ This document presents comprehensive experimental results from both simulation (
 ### Phase 1 Visualization
 
 Results with plots available in:
+
 - `results/phase1_simulation/comparison_plots/tracking_error_comparison.png`
 - `results/phase1_simulation/comparison_plots/improvement_percentages.png`
 - `results/phase1_simulation/comparison_plots/control_smoothness_comparison.png`
@@ -118,29 +127,32 @@ Results with plots available in:
 Only **hover** and **spiral** were successfully deployed on Tello hardware.
 
 **Failed Trajectories**:
--  **Circle**: Caused oscillations due to aggressive maneuvers
--  **Figure8**: Too fast for Tello's control authority
--  **Square**: Sharp turns beyond hardware capabilities
+
+- **Circle**: Caused oscillations due to aggressive maneuvers
+- **Figure8**: Too fast for Tello's control authority
+- **Square**: Sharp turns beyond hardware capabilities
 
 ### Hover - Wind Perturbation Tests
 
 **Test Conditions**: Indoor flight with simulated wind disturbances (fan)
 
-| Metric | PID | Hybrid RL | Improvement |
-|--------|-----|-----------|-------------|
-| Mean Position Error | 0.089m | 0.071m | **+20.2%** |
-| Max Position Error | 0.245m | 0.198m | **+19.2%** |
-| Trajectory Completion |  100% |  100% | — |
-| Battery Usage | 18% | 19% | -1% (negligible) |
-| Flight Time | ~120s | ~120s | Same |
+| Metric                | PID    | Hybrid RL | Improvement      |
+| --------------------- | ------ | --------- | ---------------- |
+| Mean Position Error   | 0.089m | 0.071m    | **+20.2%**       |
+| Max Position Error    | 0.245m | 0.198m    | **+19.2%**       |
+| Trajectory Completion | 100%   | 100%      | —                |
+| Battery Usage         | 18%    | 19%       | -1% (negligible) |
+| Flight Time           | ~120s  | ~120s     | Same             |
 
 **Key Observations**:
+
 - Hybrid maintains tighter position hold under wind
 - Smoother response to disturbances
 - Minimal additional power consumption
 - Both controllers stable and safe
 
 **Plots Available**:
+
 - `results/phase2_real_drone/perturbation_analysis/hover/comparison_hover_wind.png`
 - `results/phase2_real_drone/perturbation_analysis/hover/hybrid_hover_wind_3d.png`
 - `results/phase2_real_drone/perturbation_analysis/hover/pid_hover_wind_3d.png`
@@ -149,21 +161,23 @@ Only **hover** and **spiral** were successfully deployed on Tello hardware.
 
 **Test Conditions**: 3D spiral trajectory with wind disturbances
 
-| Metric | PID | Hybrid RL | Improvement |
-|--------|-----|-----------|-------------|
-| Mean Position Error | 0.156m | 0.124m | **+20.5%** |
-| Max Position Error | 0.421m | 0.338m | **+19.7%** |
-| Trajectory Completion |  100% |  100% | — |
-| Battery Usage | 22% | 23% | -1% (negligible) |
-| Flight Time | ~140s | ~140s | Same |
+| Metric                | PID    | Hybrid RL | Improvement      |
+| --------------------- | ------ | --------- | ---------------- |
+| Mean Position Error   | 0.156m | 0.124m    | **+20.5%**       |
+| Max Position Error    | 0.421m | 0.338m    | **+19.7%**       |
+| Trajectory Completion | 100%   | 100%      | —                |
+| Battery Usage         | 22%    | 23%       | -1% (negligible) |
+| Flight Time           | ~140s  | ~140s     | Same             |
 
 **Key Observations**:
+
 - Hybrid tracks spiral more accurately
 - Better recovery from wind gusts
 - Maintains altitude more consistently
 - Smooth transitions between trajectory segments
 
 **Plots Available**:
+
 - `results/phase2_real_drone/perturbation_analysis/spiral/comparison_spiral_wind.png`
 - `results/phase2_real_drone/perturbation_analysis/spiral/hybrid_spiral_wind_3d.png`
 - `results/phase2_real_drone/perturbation_analysis/spiral/pid_spiral_wind_3d.png`
@@ -173,12 +187,14 @@ Only **hover** and **spiral** were successfully deployed on Tello hardware.
 **Test**: Pure autonomous execution without perturbations
 
 Results for hover and spiral show:
--  Successful trajectory following
--  Stable flight throughout
--  Safe landing after completion
--  Repeatable performance
+
+- Successful trajectory following
+- Stable flight throughout
+- Safe landing after completion
+- Repeatable performance
 
 **Additional Analysis Plots**:
+
 - `results/phase2_real_drone/autonomous_analysis/hover_analysis.png`
 - `results/phase2_real_drone/autonomous_analysis/hover_3d_comparison.png`
 - `results/phase2_real_drone/autonomous_analysis/spiral_analysis.png`
@@ -187,6 +203,7 @@ Results for hover and spiral show:
 ### Phase 2 Summary Statistics
 
 **Overall Real Hardware Performance**:
+
 - **Hover**: +20.2% average improvement
 - **Spiral**: +20.5% average improvement
 - **Success Rate**: 100% on compatible trajectories
@@ -199,29 +216,31 @@ Results for hover and spiral show:
 
 ### Configuration Evolution
 
-| Parameter | Phase 1 (Simulation) | Phase 2 (Real Drone) | Reason for Change |
-|-----------|---------------------|----------------------|-------------------|
-| **Residual Scale** | 200 RPM | 100 RPM | Tello has limited control authority |
-| **Mass DR** | ±20% | ±30% | Real world more uncertain |
-| **Inertia DR** | ±20% | ±30% | Increased robustness needed |
-| **Wind DR** | 0.05N | 0.15N | Real air currents stronger |
-| **Trajectories** | All 5 | Hover, Spiral only | Hardware limitations |
+| Parameter          | Phase 1 (Simulation) | Phase 2 (Real Drone) | Reason for Change                   |
+| ------------------ | -------------------- | -------------------- | ----------------------------------- |
+| **Residual Scale** | 200 RPM              | 100 RPM              | Tello has limited control authority |
+| **Mass DR**        | ±20%                 | ±30%                 | Real world more uncertain           |
+| **Inertia DR**     | ±20%                 | ±30%                 | Increased robustness needed         |
+| **Wind DR**        | 0.05N                | 0.15N                | Real air currents stronger          |
+| **Trajectories**   | All 5                | Hover, Spiral only   | Hardware limitations                |
 
 ### Improvement Consistency
 
 **Hover Trajectory**:
+
 - Phase 1 (Sim, DR): +21.5% improvement
 - Phase 2 (Real, Wind): +20.2% improvement
 - **Consistency: Excellent** (within 1.3%)
 
 **Spiral Trajectory**:
+
 - Phase 1 (Sim, DR): +73.7% improvement (extreme case)
 - Phase 2 (Real, Wind): +20.5% improvement
 - **Consistency: Good** (real-world less extreme than worst-case simulation)
 
 ### Sim-to-Real Transfer Success
 
- **Hover**: Simulation improvements transferred successfully  
+**Hover**: Simulation improvements transferred successfully  
  **Spiral**: Simulation improvements transferred successfully  
  **Circle**: Did not transfer (hardware limitations)  
  **Figure8**: Did not attempt (simulation showed would fail)  
@@ -242,6 +261,7 @@ Results for hover and spiral show:
 ### 2. Domain Randomization is Critical
 
 Without DR training, models would likely fail on real hardware:
+
 - Phase 1 DR testing showed 3-15× better robustness
 - Phase 2 real tests validated this with 20%+ improvements under wind
 
@@ -270,10 +290,12 @@ Without DR training, models would likely fail on real hardware:
 ### Phase 1: Standard Deviations
 
 **Baseline Performance Variability**:
+
 - PID: Low variance (well-tuned, predictable)
 - Hybrid: Comparable variance to PID
 
 **With Domain Randomization**:
+
 - PID: High variance (struggles with perturbations)
   - Circle: 0.313m std dev (213% of mean!)
   - Spiral: 0.480m std dev (93% of mean!)
@@ -281,11 +303,12 @@ Without DR training, models would likely fail on real hardware:
   - Circle: 0.029m std dev (20% of mean)
   - Spiral: 0.010m std dev (7% of mean)
 
-**Insight**: Hybrid provides more *consistent* performance under uncertainty.
+**Insight**: Hybrid provides more _consistent_ performance under uncertainty.
 
 ### Phase 2: Real Flight Repeatability
 
 All real Tello flights showed:
+
 - Consistent battery usage (±1%)
 - Repeatable flight times
 - Similar error distributions across runs
@@ -296,10 +319,12 @@ All real Tello flights showed:
 ### Statistical Significance
 
 **Phase 1 Improvements**:
+
 - All trajectory improvements statistically significant (p < 0.01)
 - Except hover baseline (-5.4%, within measurement noise)
 
 **Phase 2 Improvements**:
+
 - Hover: +20.2% improvement (significant)
 - Spiral: +20.5% improvement (significant)
 
@@ -316,11 +341,13 @@ This research successfully demonstrated:
 5.  **Practical deployment** is safe, reliable, and repeatable
 
 **Limitations**:
+
 - Hardware constraints limited trajectory complexity
 - Only tested on lightweight drone (80g Tello)
 - Indoor environment only
 
 **Future Work**:
+
 - Test on more powerful drones (higher control authority)
 - Outdoor deployment with GPS and stronger winds
 - More complex trajectories (3D acrobatics)
@@ -331,19 +358,17 @@ This research successfully demonstrated:
 ## References to Results Files
 
 ### Phase 1 Simulation
+
 - **Data**: `results/phase1_simulation/perturbation_tests/perturbation_test_results_20251214_145117.json`
 - **Plots**: `results/phase1_simulation/comparison_plots/*.png`
 
 ### Phase 2 Real Drone
+
 - **Hover Analysis**: `results/phase2_real_drone/perturbation_analysis/hover/*.png`
 - **Spiral Analysis**: `results/phase2_real_drone/perturbation_analysis/spiral/*.png`
 - **Autonomous Flights**: `results/phase2_real_drone/autonomous_analysis/*.png`
 - **Summary**: `results/phase2_real_drone/perturbation_analysis/summary_all_trajectories.png`
 
 ### Video Demonstrations
-- Phase 1 simulation videos: *TBD (Google Drive link)*
-- Phase 2 real flight videos: *TBD (Google Drive link)*
 
----
-
-*Last Updated: December 14, 2025*
+- Phase 2 real flight videos: *https://drive.google.com/file/d/1A-3saHSC-061H_XvPKcBVC0CZB35RkIP/view?usp=sharing*
