@@ -296,6 +296,16 @@ Testing `logs/hybrid_tello_drone/*/rl_only_*/` on DJI Tello:
 
 **Key Insight**: Successful sim-to-real transfer with 20%+ improvements on compatible trajectories. See [RESULTS.md](RESULTS.md) for complete analysis.
 
+#### Real Drone Performance Analysis
+
+**Spiral with Wind Perturbations** (DJI Tello Hardware)
+
+![Spiral Perturbation Analysis](results/figures/phase2_real_drone/perturbation_analysis/spiral/comparison_spiral_wind.png)
+
+**Summary Across All Real Drone Tests**
+
+![All Trajectories Summary](results/figures/phase2_real_drone/perturbation_analysis/summary_all_trajectories.png)
+
 Full results with plots and analysis: [RESULTS.md](RESULTS.md)
 
 ## Video Demonstrations
@@ -320,7 +330,7 @@ All simulation videos demonstrate controllers operating under perturbations (win
 - **[Spiral](results/videos/hybrid/spiral.mp4)** - Hybrid tracking spiral trajectory with perturbations (617 KB)
 - [Waypoint](results/videos/hybrid/waypoint.mp4) - Hybrid waypoint navigation with perturbations
 
-**Visual Comparison:** Compare PID vs Hybrid performance across all 5 trajectories in [trajectory plots](results/phase1_simulation/trajectory_plots/)
+**Visual Comparison:** See detailed trajectory plots in the [Results Summary](#results-summary) section below, or browse all plots in [trajectory_plots/](results/figures/phase1_simulation/trajectory_plots/)
 
 ### Phase 2: Real Drone Videos
 Real drone flight videos (DJI Tello) will be uploaded to Google Drive:
