@@ -80,7 +80,7 @@ def main():
     
     files_to_update = [
         'src/controllers/pid_controller.py',
-        'src/real_drone/run_tello.py',
+        'src/hardware/run_tello.py',
         'scripts/autonomous_data_collection.py',
         'collect_autonomous.sh',
     ]

@@ -138,7 +138,7 @@ def train_hybrid(args):
     )
     
     # Train
-    print(f"\n🚀 Starting training...")
+    print(f"\n Starting training...")
     print(f"   Monitor progress: tensorboard --logdir {log_dir}\n")
     
     try:

@@ -196,7 +196,7 @@ def print_summary_table(results):
         by_trajectory[r['trajectory']].append(r)
     
     for traj_type, traj_results in by_trajectory.items():
-        print(f"\n📊 TRAJECTORY: {traj_type.upper()}")
+        print(f"\n TRAJECTORY: {traj_type.upper()}")
         print("-"*120)
         
         # Header
@@ -245,7 +245,7 @@ def main():
         print("   ./collect_autonomous.sh")
         return
     
-    print(f"\n📂 Found {len(files)} flight data files")
+    print(f"\n Found {len(files)} flight data files")
     
     # Load and analyze all flights
     results = []
@@ -274,7 +274,7 @@ def main():
     
     # Generate plots
     if args.plot:
-        print("\n📊 Generating comparison plots...")
+        print("\n Generating comparison plots...")
         plot_comparison(results, output_dir=args.output)
     
     print("\n✓ Done!")

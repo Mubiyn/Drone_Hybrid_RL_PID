@@ -363,7 +363,7 @@ def main():
     print(f"1. Test trajectory in simulation:")
     print(f"   python scripts/test_pid_trajectory_sim.py --trajectory {output_file}")
     print(f"\n2. Test on real Tello drone:")
-    print(f"   python src/real_drone/run_tello.py --controller pid --trajectory {output_file}")
+    print(f"   python src/hardware/run_tello.py --controller pid --trajectory {output_file}")
     print(f"\n3. Train Hybrid model to imitate manual actions:")
     print(f"   python scripts/train_hybrid_from_manual.py --data {pkl_file}")
     print(f"{'='*60}\n")

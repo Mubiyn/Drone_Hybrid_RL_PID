@@ -131,7 +131,7 @@ class ModelVersionManager:
             return None
         
         model = PPO.load(model_path)
-        print(f"✅ Loaded {version_id}")
+        print(f" Loaded {version_id}")
         return model
     
     def print_version_history(self):
@@ -155,4 +155,4 @@ if __name__ == "__main__":
     # Load the best model
     best_model, version = manager.load_best_model()
     if best_model:
-        print(f"🎯 Best model loaded: {version}")
+        print(f" Best model loaded: {version}")

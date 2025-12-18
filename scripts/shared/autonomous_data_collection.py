@@ -164,7 +164,7 @@ class AutonomousTelloController:
             (-0.02, 0.02, 0.992),
         ]
         
-        print(f"\n🚁 Autonomous Tello Controller")
+        print(f"\n Autonomous Tello Controller")
         print(f"   Trajectory: {trajectory_type}")
         print(f"   PID: kp={kp}, max_vel={max_vel} m/s")
         print(f"   MoCap: {'✓ ENABLED' if use_mocap else '✗ DISABLED (using dead reckoning)'}")
@@ -232,7 +232,7 @@ class AutonomousTelloController:
         if self.use_mocap:
             print("\n📍 Connecting to MoCap...")
             try:
-                from src.real_drone.mocap_wrapper import MocapWrapper
+                from src.hardware.mocap_wrapper import MocapWrapper
                 self.mocap_wrapper = MocapWrapper(
                     mode="multicast",
                     interface_ip="192.168.1.1",
@@ -405,13 +405,13 @@ class AutonomousTelloController:
     
     def fly_trajectory(self, duration=60.0, control_rate=20.0):
         """Execute autonomous flight along trajectory"""
-        print(f"\n🚀 Starting autonomous flight")
+        print(f"\n Starting autonomous flight")
         print(f"   Duration: {duration}s")
         print(f"   Control rate: {control_rate} Hz")
         print("\n   Press Ctrl+C to emergency stop\n")
         
         # Takeoff
-        print("   ⬆️  Taking off...", flush=True)
+        print("     Taking off...", flush=True)
         try:
             self.tello.takeoff()
             print("   ✓ Takeoff command sent", flush=True)
@@ -430,8 +430,8 @@ class AutonomousTelloController:
         
         # Print first trajectory target for debugging
         target_pos_test, _ = self.get_target_position(0.0)
-        print(f"   🎯 First trajectory target: [{target_pos_test[0]:.3f}, {target_pos_test[1]:.3f}, {target_pos_test[2]:.3f}]", flush=True)
-        print(f"   📊 Initial position error: {np.linalg.norm(takeoff_position - target_pos_test):.3f}m", flush=True)
+        print(f"    First trajectory target: [{target_pos_test[0]:.3f}, {target_pos_test[1]:.3f}, {target_pos_test[2]:.3f}]", flush=True)
+        print(f"    Initial position error: {np.linalg.norm(takeoff_position - target_pos_test):.3f}m", flush=True)
         
         self.trajectory_start_time = time.time()
         dt = 1.0 / control_rate
@@ -653,7 +653,7 @@ def tune_pid_gains(args):
     if use_mocap:
         print("\n📍 Connecting to MoCap...")
         try:
-            from src.real_drone.mocap_wrapper import MocapWrapper
+            from src.hardware.mocap_wrapper import MocapWrapper
             mocap_wrapper = MocapWrapper(
                 mode="multicast",
                 interface_ip="192.168.1.1",

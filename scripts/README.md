@@ -33,25 +33,14 @@ scripts/
 │   ├── tune_trajectories.py
 │   └── update_pid_gains.py
 │
-├── training_scripts/           # Training utilities (historical)
+├── training_scripts/           # Training utilities
 │   ├── train_pid.py
 │   ├── train_pid_from_manual.py
 │   ├── train_hybrid_from_autonomous.py
-│   ├── train_hybrid_from_manual.py
 │   ├── train_hybrid_with_trajectories.py
+│   ├── train_all.sh
+│   ├── train_hybrid_all.sh
 │   └── update_domain_randomization.py
-│
-└── archive/                    # Old/deprecated scripts
-    ├── test_hybrid.py
-    ├── test_hybrid_training.py
-    ├── test_pid_baseline.py
-    ├── test_ppo_training.py
-    ├── test_robust_training.py
-    ├── detailed_data_proof.py
-    ├── inspect_manual_data.py
-    ├── show_data_source.py
-    ├── collect_all_autonomous.sh
-    └── collect_all_tuned.sh
 ```
 
 ## Quick Start

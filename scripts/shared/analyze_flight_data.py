@@ -56,7 +56,7 @@ def analyze_flight(pkl_file):
     velocities = states[:, 6:9]  # [vx, vy, vz]
     angular_vels = states[:, 9:12]  # [wx, wy, wz]
     
-    print(f"\n📊 FLIGHT SUMMARY")
+    print(f"\n FLIGHT SUMMARY")
     print(f"  Duration: {timestamps[-1] - timestamps[0]:.2f}s")
     print(f"  Samples: {N}")
     print(f"  Sample rate: {sample_rate:.1f} Hz")
@@ -69,18 +69,18 @@ def analyze_flight(pkl_file):
     print(f"  Z: {positions[:, 2].min():.3f} to {positions[:, 2].max():.3f} (range: {np.ptp(positions[:, 2]):.3f}m)")
     print(f"  Distance traveled: {np.sum(np.linalg.norm(np.diff(positions, axis=0), axis=1)):.2f}m")
     
-    print(f"\n🎯 ORIENTATION STATISTICS (degrees)")
+    print(f"\n ORIENTATION STATISTICS (degrees)")
     print(f"  Roll:  {np.degrees(orientations[:, 0]).min():.1f}° to {np.degrees(orientations[:, 0]).max():.1f}°")
     print(f"  Pitch: {np.degrees(orientations[:, 1]).min():.1f}° to {np.degrees(orientations[:, 1]).max():.1f}°")
     print(f"  Yaw:   {np.degrees(orientations[:, 2]).min():.1f}° to {np.degrees(orientations[:, 2]).max():.1f}°")
     
-    print(f"\n🚀 VELOCITY STATISTICS (m/s)")
+    print(f"\n VELOCITY STATISTICS (m/s)")
     print(f"  Vx: {velocities[:, 0].min():.2f} to {velocities[:, 0].max():.2f} (avg: {np.abs(velocities[:, 0]).mean():.2f})")
     print(f"  Vy: {velocities[:, 1].min():.2f} to {velocities[:, 1].max():.2f} (avg: {np.abs(velocities[:, 1]).mean():.2f})")
     print(f"  Vz: {velocities[:, 2].min():.2f} to {velocities[:, 2].max():.2f} (avg: {np.abs(velocities[:, 2]).mean():.2f})")
     print(f"  Max speed: {np.linalg.norm(velocities, axis=1).max():.2f} m/s")
     
-    print(f"\n🎮 ACTION STATISTICS (normalized -1 to 1)")
+    print(f"\n ACTION STATISTICS (normalized -1 to 1)")
     action_names = ['Forward/Back', 'Left/Right', 'Up/Down', 'Yaw Rate']
     for i, name in enumerate(action_names):
         nonzero = np.abs(actions[:, i]) > 0.01

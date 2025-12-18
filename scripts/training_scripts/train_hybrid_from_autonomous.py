@@ -223,7 +223,7 @@ def finetune_with_rl(bc_policy, trajectory_file, args):
     )
     
     # Train
-    print(f"\n🚀 Starting RL fine-tuning...")
+    print(f"\n Starting RL fine-tuning...")
     print(f"   Monitor: tensorboard --logdir {log_dir}\n")
     
     try:

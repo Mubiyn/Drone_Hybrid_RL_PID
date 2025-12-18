@@ -51,7 +51,30 @@ def train_robust_hybrid(trajectory_type='hover', enable_dr=True):
         model.learn(total_timesteps=TRAIN_CONFIG["total_timesteps"], callback=callbacks)
         save_path=log_dir, 
         name_prefix=f"hybrid_{type_str}_model"
-    )
+    except KeyboardInterrupt:
+        print("\nTraining interrupted by user. Saving current model...")
+    finally:
+        # Save final model
+        model.save(f"{log_dir}/final_model")
+        env.save(f"{log_dir}/vec_normalize.pkl")
+        
+        # Also save to models/ folder for easy access
+        models_dir = f"models/hybrid_{type_str}/{trajectory_type}"
+        os.makedirs(models_dir, exist_ok=True)
+        model.save(f"{models_dir}/final_model")
+        env.save(f"{models_dir}/vec_normalize.pkl")
+        
+        # Copy best_model if it exists (from EvalCallback)
+        import shutil
+        best_model_path = f"{log_dir}/best_model.zip"
+        if os.path.exists(best_model_path):
+            shutil.copy(best_model_path, f"{models_dir}/best_model.zip")
+            print(f"✓ Best model saved to {models_dir}/best_model.zip")
+        
+        print(f"✓ Final model saved to {log_dir} and {models_dir}")
+        print(f"  Use best_model.zip for deployment (highest eval reward)")
+        print(f"  Use final_model.zip only if best_model doesn't exist")
+
     
     # CRITICAL: EvalCallback to save BEST model (not just final)
     eval_callback = EvalCallback(
